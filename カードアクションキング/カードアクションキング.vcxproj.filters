@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Souce\main.cpp" />
+    <ClCompile Include="Souce\Scene\Base\SceneManager.cpp" />
+    <ClCompile Include="Souce\Scene\CardList\CardList.cpp" />
+    <ClCompile Include="Souce\Scene\Home\HomeScene.cpp" />
+    <ClCompile Include="Souce\Manager\GameManager\GameManager.cpp" />
+    <ClCompile Include="Souce\Manager\Input\InputManager.cpp" />
+    <ClCompile Include="Souce\Manager\Resource\TextureManager.cpp" />
+    <ClCompile Include="Souce\Manager\Resource\ResourceManager.cpp" />
+    <ClCompile Include="Souce\card\CSV\CSVLoader.cpp" />
+    <ClCompile Include="Souce\card\Manager\CardManager.cpp" />
+    <ClCompile Include="Souce\UI\Button\Button.cpp" />
+    <ClCompile Include="Souce\UI\UIManager.cpp" />
+    <ClCompile Include="Souce\UI\Image\Image.cpp" />
+    <ClCompile Include="Souce\UI\Label\Label.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Souce\Scene\Base\SceneManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\Scene\Base\SceneBase.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\Scene\CardList\CardList.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\Scene\Home\HomeScene.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\Manager\GameManager\GameManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\Manager\Input\InputManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\Manager\Resource\TextureManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\Manager\Resource\ResourceManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\card\CSV\CSVLoader.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\card\data\CardData.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\card\Manager\CardManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\UI\UIBase.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\UI\Button\Button.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\UI\UIManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\UI\Image\Image.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\UI\Label\Label.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
