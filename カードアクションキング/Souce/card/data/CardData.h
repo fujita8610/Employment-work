@@ -1,27 +1,36 @@
 #pragma once
 
 #include <string>
+#include <vector>
+
+//カードタイプ
+#include "CardType.h"
+
+//カード効果
+#include "CardEffect.h"
 
 struct CardData
 {
-	//カードのID
+    // 基本情報
     int id = 0;
-    
-    //カードの名前    
     std::string name;
-
-	//カードの画像パス
     std::string image;
 
-    //HP
-    int hp = 0;
-
-	//攻撃力
-    int attack = 0;
+    // カード種別
+    CardType type = CardType::Unit;
 
 	//コスト
     int cost = 0;
 
+    // ユニット用ステータス
+    int hp = 0;
+    int attack = 0;
+    //int move = 0;      // 移動力
+   // int range = 1;     // 攻撃範囲
+
 	//カードの説明
     std::string description;
+
+    // 効果
+    std::vector<CardEffect> effects;
 };

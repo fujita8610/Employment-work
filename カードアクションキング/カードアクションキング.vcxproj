@@ -145,6 +145,10 @@
   <ItemGroup>
     <ClInclude Include="Souce\card\CSV\CSVLoader.h" />
     <ClInclude Include="Souce\card\data\CardData.h" />
+    <ClInclude Include="Souce\card\data\CardEffect.h" />
+    <ClInclude Include="Souce\card\data\CardType.h" />
+    <ClInclude Include="Souce\card\data\EffectType.h" />
+    <ClInclude Include="Souce\card\data\TargetType.h" />
     <ClInclude Include="Souce\card\Manager\CardManager.h" />
     <ClInclude Include="Souce\Manager\GameManager\GameManager.h" />
     <ClInclude Include="Souce\Manager\Input\InputManager.h" />
