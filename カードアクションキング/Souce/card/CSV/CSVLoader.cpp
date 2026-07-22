@@ -35,8 +35,29 @@ bool CSVLoader::LoadCSV(
         outData.push_back(Split(line));
     }
 
+  
+
 	// ƒtƒ@ƒCƒ‹‚ğ•Â‚¶‚é
     file.close();
 
     return true;
+}
+
+// CSVLoader‚Ì•¶š—ñ•ªŠ„ŠÖ”
+std::vector<std::string> CSVLoader::Split(
+    const std::string& line,
+    char delimiter)
+{
+    std::vector<std::string> result;
+
+    std::stringstream ss(line);
+
+    std::string item;
+
+    while (std::getline(ss, item, delimiter))
+    {
+        result.push_back(item);
+    }
+
+    return result;
 }

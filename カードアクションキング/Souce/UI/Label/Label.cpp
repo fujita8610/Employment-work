@@ -16,20 +16,11 @@ void Label::Draw()
 
     if (m_fontHandle == -1)
     {
-        DrawString(
-            x,
-            y,
-            m_text.c_str(),
-            m_color);
+       // DrawString(x, y, m_text.c_str(), m_color);
     }
     else
     {
-        DrawStringToHandle(
-            x,
-            y,
-            m_text.c_str(),
-            m_color,
-            m_fontHandle);
+       // DrawStringToHandle( x, y, m_text.c_str(), m_color, m_fontHandle);
     }
 }
 

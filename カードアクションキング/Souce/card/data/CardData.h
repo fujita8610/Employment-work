@@ -9,6 +9,9 @@
 //カード効果
 #include "CardEffect.h"
 
+//カードの移動パターン
+#include "Pattern/PatternType.h"
+
 struct CardData
 {
     // 基本情報
@@ -33,4 +36,8 @@ struct CardData
 
     // 効果
     std::vector<CardEffect> effects;
+
+	// 攻撃パターンと移動パターン
+    PatternType attackPattern = PatternType::None;
+    PatternType movePattern = PatternType::None;
 };

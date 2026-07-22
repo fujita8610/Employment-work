@@ -72,11 +72,7 @@ void Button::Draw()
             GetColor(255, 255, 255),
             FALSE);
 
-        DrawString(
-            x + 15,
-            y + 10,
-            m_text.c_str(),
-            GetColor(255, 255, 255));
+       // DrawString(x + 15, y + 10, m_text.c_str(), GetColor(255, 255, 255));
     }
 }
 

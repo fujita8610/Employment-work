@@ -8,12 +8,12 @@ bool TextureManager::Load(const std::string& name,
     if (m_textures.find(name) != m_textures.end())
         return true;
 
-    int handle = LoadGraph(path.c_str());
+   // int handle = LoadGraph(path.c_str());
 
-    if (handle == -1)
+  //  if (handle == -1)
         return false;
 
-    m_textures[name] = handle;
+   // m_textures[name] = handle;
 
     return true;
 }
