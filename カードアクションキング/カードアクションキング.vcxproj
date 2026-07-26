@@ -102,12 +102,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>"C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>　"C:\Users\harut\OneDrive\ドキュメント\DxLib_VC3_24f\DxLib_VC\プロジェクトに追加すべきファイル_VC用"</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>"C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用"</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>　"C:\Users\harut\OneDrive\ドキュメント\DxLib_VC3_24f\DxLib_VC\プロジェクトに追加すべきファイル_VC用"</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -135,6 +135,9 @@
     <ClCompile Include="Souce\Manager\Resource\ResourceManager.cpp" />
     <ClCompile Include="Souce\Manager\Resource\TextureManager.cpp" />
     <ClCompile Include="Souce\Scene\Base\SceneManager.cpp" />
+    <ClCompile Include="Souce\Scene\Battle\board\Board.cpp" />
+    <ClCompile Include="Souce\Scene\Battle\board\Cell\Cell.cpp" />
+    <ClCompile Include="Souce\Scene\Battle\board\Unit\Unit.cpp" />
     <ClCompile Include="Souce\Scene\CardList\CardList.cpp" />
     <ClCompile Include="Souce\Scene\Home\HomeScene.cpp" />
     <ClCompile Include="Souce\UI\Button\Button.cpp" />
@@ -154,8 +157,13 @@
     <ClInclude Include="Souce\Manager\Input\InputManager.h" />
     <ClInclude Include="Souce\Manager\Resource\ResourceManager.h" />
     <ClInclude Include="Souce\Manager\Resource\TextureManager.h" />
+    <ClInclude Include="Souce\meno.h" />
     <ClInclude Include="Souce\Scene\Base\SceneBase.h" />
     <ClInclude Include="Souce\Scene\Base\SceneManager.h" />
+    <ClInclude Include="Souce\Scene\Battle\BattleConfig.h" />
+    <ClInclude Include="Souce\Scene\Battle\board\Board.h" />
+    <ClInclude Include="Souce\Scene\Battle\board\Cell\Cell.h" />
+    <ClInclude Include="Souce\Scene\Battle\board\Unit\Unit.h" />
     <ClInclude Include="Souce\Scene\CardList\CardList.h" />
     <ClInclude Include="Souce\Scene\Home\HomeScene.h" />
     <ClInclude Include="Souce\UI\Button\Button.h" />

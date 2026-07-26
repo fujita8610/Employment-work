@@ -21,6 +21,9 @@
     <ClCompile Include="Souce\UI\UIManager.cpp" />
     <ClCompile Include="Souce\UI\Image\Image.cpp" />
     <ClCompile Include="Souce\UI\Label\Label.cpp" />
+    <ClCompile Include="Souce\Scene\Battle\board\Cell\Cell.cpp" />
+    <ClCompile Include="Souce\Scene\Battle\board\Board.cpp" />
+    <ClCompile Include="Souce\Scene\Battle\board\Unit\Unit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Souce\Scene\Base\SceneManager.h">
@@ -81,6 +84,21 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Souce\card\data\CardEffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\Scene\Battle\board\Cell\Cell.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\Scene\Battle\board\Unit\Unit.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\Scene\Battle\BattleConfig.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\Scene\Battle\board\Board.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Souce\meno.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

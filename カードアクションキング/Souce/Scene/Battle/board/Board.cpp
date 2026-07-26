@@ -1,7 +1,12 @@
 #include "Board.h"
 
 #include "DxLib.h"
+
+//ユニット
 #include "Unit/Unit.h"
+
+//
+#include "Cell/Cell.h"
 
 bool Board::Init()
 {
@@ -72,7 +77,11 @@ bool Board::PlaceUnit(Unit* unit, int x, int y)
 {
     if (!IsInside(x, y))
     {
-        return false;
+        cell->SetUnit(unit);
+
+        unit->SetBoardPosition(x, y);
+
+        return true;
     }
 
     Cell* cell = GetCell(x, y);
@@ -116,6 +125,9 @@ bool Board::MoveUnit(int fromX, int fromY, int toX, int toY)
 
     from->RemoveUnit();
     to->SetUnit(unit);
+
+    // Unit自身の座標も更新
+    unit->SetBoardPosition(toX, toY);
 
     return true;
 }
