@@ -4,9 +4,11 @@
 
 //ユニット
 #include "Unit/Unit.h"
-
 //
 #include "Cell/Cell.h"
+
+//Manager
+#include "../../../Manager/Input/InputManager.h"
 
 bool Board::Init()
 {
@@ -77,9 +79,6 @@ bool Board::PlaceUnit(Unit* unit, int x, int y)
 {
     if (!IsInside(x, y))
     {
-        cell->SetUnit(unit);
-
-        unit->SetBoardPosition(x, y);
 
         return true;
     }
@@ -92,7 +91,7 @@ bool Board::PlaceUnit(Unit* unit, int x, int y)
     }
 
     cell->SetUnit(unit);
-
+    unit->SetBoardPosition(x, y);
     return true;
 }
 
@@ -140,4 +139,38 @@ void Board::RemoveUnit(int x, int y)
     }
 
     GetCell(x, y)->RemoveUnit();
+}
+
+bool Board::GetCellIndexFromMouse(int& x, int& y)
+{
+    int mouseX = InputManager::GetInstance().GetMouseX();
+    int mouseY = InputManager::GetInstance().GetMouseY();
+
+    mouseX -= BattleConfig::BOARD_X;
+    mouseY -= BattleConfig::BOARD_Y;
+
+	// マウスが盤面の外にある場合は無効
+    if (mouseX < 0 || mouseY < 0)
+    {
+        return false;
+    }
+
+	// マウス座標をセル座標に変換
+    x = mouseX / BattleConfig::CELL_SIZE;
+    y = mouseY / BattleConfig::CELL_SIZE;
+
+    return IsInside(x, y);
+}
+
+Cell* Board::GetCellFromMouse()
+{
+    int x;
+    int y;
+
+    if (!GetCellIndexFromMouse(x, y))
+    {
+        return nullptr;
+    }
+
+    return GetCell(x, y);
 }

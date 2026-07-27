@@ -30,6 +30,12 @@ public:
     // ユニット削除
     void RemoveUnit(int x, int y);
 
+    // マウス位置からセル取得
+    Cell* GetCellFromMouse();
+
+    // マウス位置から座標取得
+    bool GetCellIndexFromMouse(int& x, int& y);
+
 private:
 
     // 5×5の盤面
