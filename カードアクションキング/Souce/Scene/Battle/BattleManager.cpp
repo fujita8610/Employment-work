@@ -1,9 +1,14 @@
 #include "BattleManager.h"
+#include "../../card/Manager/CardManager.h"
 
 // 初期化
 bool BattleManager::Init()
 {
     return m_board.Init();
+
+    //カードの取得
+    const CardData* knight =
+        CardManager::GetInstance().GetCard(0);
 }
 
 // 更新
