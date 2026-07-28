@@ -1,9 +1,21 @@
 #include "BattleManager.h"
+
+//３D関連
+#include "Camera/Camera3D.h"
+#include "board/Renderer/BoardRenderer.h"
+
+//各マネージャー
+
+//カードマネージャー
 #include "../../card/Manager/CardManager.h"
 
 // 初期化
 bool BattleManager::Init()
 {
+    m_camera.Init();
+
+    m_renderer.Init();
+
     return m_board.Init();
 
     //カードの取得
@@ -23,12 +35,14 @@ void BattleManager::Update()
         }
     }
 
+    m_camera.Update();
     m_board.Update();
 }
 
 // 描画
 void BattleManager::Draw()
 {
+    m_renderer.Draw(m_board);
     m_board.Draw();
 }
 

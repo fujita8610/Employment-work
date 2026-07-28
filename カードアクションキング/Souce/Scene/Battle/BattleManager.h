@@ -30,6 +30,10 @@ public:
 
 private:
 
+    Camera3D m_camera;
+
+    BoardRenderer m_renderer;
+
     Board m_board;
 
     std::vector<Unit*> m_units;

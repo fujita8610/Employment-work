@@ -1,0 +1,19 @@
+#pragma once
+
+class Board;
+
+class BoardRenderer
+{
+public:
+
+    bool Init();
+
+    void Draw(const Board& board);
+
+    void Release();
+
+private:
+
+    // è∞ÉÇÉfÉã
+    int m_floorModel = -1;
+};
