@@ -3,8 +3,28 @@
 //Vector
 #include <vector>
 
+//バトル関連
 #include "Board/Board.h"
+#include "board/Renderer/BoardRenderer.h"
 #include "Board/Unit/Unit.h"
+
+//カード関連
+#include "../../card/data/CardData.h"
+#include "../../card/Manager/CardManager.h"
+
+//カメラ
+#include "Camera/Camera3D.h"
+
+//Player
+#include "Player/BattlePlayer.h"
+
+//各マネージャー
+//ターンマネージャー
+#include "Turn/TurnManager.h"
+
+//Renderer
+//Hand
+#include "Renderer/Hand/HandRenderer.h"
 
 class BattleManager
 {
@@ -28,13 +48,37 @@ public:
     // ボード取得
     Board& GetBoard();
 
+    //ターンマネージャーの取得
+    TurnManager& GetTurnManager();
+
+    // プレイヤー側取得
+    BattlePlayer& GetPlayer();
+
+    // エネミー側取得
+    BattlePlayer& GetEnemy();
+
 private:
 
+    // プレイヤー側
+    BattlePlayer m_player;
+
+    // エネミー側
+    BattlePlayer m_enemy;
+
+    //カメラ
     Camera3D m_camera;
-
+    //盤面描画
     BoardRenderer m_renderer;
-
+    //盤面
     Board m_board;
+    //ターン管理
+    TurnManager m_turnManager;
 
+    //描画
+
+    // 手札描画
+    HandRenderer m_handRenderer;
+
+    //盤面上のユニット
     std::vector<Unit*> m_units;
 };

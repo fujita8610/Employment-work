@@ -1,20 +1,37 @@
 #pragma once
 
-class EnemyTurn
+#include "../TurnBase.h"
+
+
+class BattleManager;
+
+class EnemyTurn : public TurnBase
 {
 public:
 
-    bool Init();
+    EnemyTurn() = default;
 
-    void Start();
+    // 初期化
+    bool Init(BattleManager* battleManager)override;
 
-    void Update();
+    // ターン開始
+    void Start() override;
 
-    bool IsFinished() const;
+    // 更新
+    void Update() override;
 
-    void End();
+    // ターン終了
+    void End() override;
+
+    // 終了済みフラグ
+    bool IsFinished() const override;
+
+    //リセット
+    void Reset() override;
 
 private:
+
+    BattleManager* m_battleManager = nullptr;
 
     bool m_started = false;
     bool m_finished = false;

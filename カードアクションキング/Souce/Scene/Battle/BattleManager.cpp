@@ -1,31 +1,90 @@
+#include "DxLib.h"
 #include "BattleManager.h"
-
-//３D関連
-#include "Camera/Camera3D.h"
-#include "board/Renderer/BoardRenderer.h"
-
-//各マネージャー
-
-//カードマネージャー
-#include "../../card/Manager/CardManager.h"
 
 // 初期化
 bool BattleManager::Init()
 {
-    m_camera.Init();
+    // 3Dカメラ初期化
+    if (!m_camera.Init())
+    {
+        return false;
+    }
 
-    m_renderer.Init();
+    // 盤面初期化
+    if (!m_board.Init())
+    {
+        return false;
+    }
 
-    return m_board.Init();
+    // 盤面描画初期化
+    if (!m_renderer.Init())
+    {
+        return false;
+    }
 
-    //カードの取得
-    const CardData* knight =
-        CardManager::GetInstance().GetCard(0);
+    // プレイヤー初期化
+    if (!m_player.Init(UnitOwner::Player))
+    {
+        return false;
+    }
+
+    // 敵プレイヤー初期化
+    if (!m_enemy.Init(UnitOwner::Enemy))
+    {
+        return false;
+    }
+
+    // ターンマネージャー初期化
+    if (!m_turnManager.Init(this))
+    {
+        return false;
+    }
+
+    // 手札描画初期化
+    if (!m_handRenderer.Init())
+    {
+        return false;
+    }
+    return true;
 }
+
 
 // 更新
 void BattleManager::Update()
 {
+    //カメラ更新
+    m_camera.Update();
+
+    //ターン更新
+    m_turnManager.Update();
+
+    //手札クリック処理
+
+    // プレイヤーターンのときだけ選択可能
+    if (m_turnManager.IsPlayerTurn())
+    {
+        int mouseX;
+        int mouseY;
+
+        GetMousePoint(&mouseX, &mouseY);
+
+        // 左クリックされた瞬間
+        if ((GetMouseInput() & MOUSE_INPUT_LEFT) != 0)
+        {
+            int index =
+                m_handRenderer.GetClickedCardIndex(
+                    m_player.GetHand(),
+                    mouseX,
+                    mouseY);
+
+            if (index >= 0)
+            {
+                m_player.SelectCard(
+                    static_cast<size_t>(index));
+            }
+        }
+    }
+
     // 全ユニット更新
     for (Unit* unit : m_units)
     {
@@ -35,20 +94,63 @@ void BattleManager::Update()
         }
     }
 
-    m_camera.Update();
+    //盤面更新
     m_board.Update();
 }
 
 // 描画
 void BattleManager::Draw()
 {
+    //3D盤面
     m_renderer.Draw(m_board);
+    //ユニット
     m_board.Draw();
-}
+    // プレイヤーの手札
+    m_handRenderer.Draw(m_player.GetHand());
 
+    // ターンデバッグ表示
+    const TurnManager& turnManager = m_turnManager;
+
+    const char* turnText = "NONE";
+
+    if (turnManager.IsPlayerTurn())
+    {
+        turnText = "PLAYER TURN";
+    }
+    else if (turnManager.IsEnemyTurn())
+    {
+        turnText = "ENEMY TURN";
+    }
+
+    DrawString(
+        30,
+        30,
+        turnText,
+        GetColor(255, 255, 255));
+
+    DrawFormatString(
+        30,
+        60,
+        GetColor(255, 255, 255),
+        "TURN : %d",
+        turnManager.GetTurnCount());
+}
 // 終了処理
 void BattleManager::Release()
 {
+    // ターンマネージャー終了
+    m_turnManager.Release();
+
+    //Renderer
+    m_handRenderer.Release();
+
+    // 盤面描画終了
+    m_renderer.Release();
+
+    // カメラ終了
+    m_camera.Release();
+
+    // ユニット解放
     for (Unit* unit : m_units)
     {
         delete unit;
@@ -95,4 +197,23 @@ Unit* BattleManager::CreateUnit(
 Board& BattleManager::GetBoard()
 {
     return m_board;
+}
+
+// TurnManager取得
+TurnManager& BattleManager::GetTurnManager()
+{
+    return m_turnManager;
+}
+
+// プレイヤー側取得
+BattlePlayer& BattleManager::GetPlayer()
+{
+    return m_player;
+}
+
+
+// 敵側取得
+BattlePlayer& BattleManager::GetEnemy()
+{
+    return m_enemy;
 }
