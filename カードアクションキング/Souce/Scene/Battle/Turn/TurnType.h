@@ -6,9 +6,9 @@ enum class TurnType
     //ターン未開始
     None = 0,
 
-    //プレイヤー
-    Player,
+    //プレイヤー1
+    Player1,
 
-    //エネミー
-    Enemy
+    // プレイヤー2
+    Player2
 };

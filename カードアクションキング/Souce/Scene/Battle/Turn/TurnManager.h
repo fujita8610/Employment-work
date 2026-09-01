@@ -4,6 +4,7 @@
 #include "PlayerTurn/PlayerTurn.h"
 #include "EnemyTurn/EnemyTurn.h"
 
+#include "ControllerType.h"
 class BattleManager;
 
 class TurnManager
@@ -52,6 +53,9 @@ private:
     EnemyTurn m_enemyTurn;
 
     TurnType m_currentTurn = TurnType::None;
+
+    ControllerType m_player1Controller = ControllerType::Human;
+    ControllerType m_player2Controller = ControllerType::AI;
 
     int m_turnCount = 0;
 
