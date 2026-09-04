@@ -57,20 +57,25 @@ public:
     // エネミー側取得
     BattlePlayer& GetEnemy();
 
+	// 現在のターンのプレイヤー取得
+    BattlePlayer& GetCurrentPlayer();
+
 private:
 
     // プレイヤー側
-    BattlePlayer m_player;
+    BattlePlayer m_player1;
 
-    // エネミー側
-    BattlePlayer m_enemy;
+    // player２側
+    BattlePlayer m_player2;
 
     //カメラ
     Camera3D m_camera;
+
     //盤面描画
     BoardRenderer m_renderer;
     //盤面
     Board m_board;
+
     //ターン管理
     TurnManager m_turnManager;
 

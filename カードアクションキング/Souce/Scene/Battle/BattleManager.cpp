@@ -23,13 +23,13 @@ bool BattleManager::Init()
     }
 
     // プレイヤー初期化
-    if (!m_player.Init(UnitOwner::Player))
+    if (!m_player1.Init(UnitOwner::Player))
     {
         return false;
     }
 
     // 敵プレイヤー初期化
-    if (!m_enemy.Init(UnitOwner::Enemy))
+    if (!m_player2.Init(UnitOwner::Enemy))
     {
         return false;
     }
@@ -73,13 +73,13 @@ void BattleManager::Update()
         {
             int index =
                 m_handRenderer.GetClickedCardIndex(
-                    m_player.GetHand(),
+                    m_player1.GetHand(),
                     mouseX,
                     mouseY);
 
             if (index >= 0)
             {
-                m_player.SelectCard(
+                m_player1.SelectCard(
                     static_cast<size_t>(index));
             }
         }
@@ -106,7 +106,7 @@ void BattleManager::Draw()
     //ユニット
     m_board.Draw();
     // プレイヤーの手札
-    m_handRenderer.Draw(m_player.GetHand());
+    m_handRenderer.Draw(m_player1.GetHand());
 
     // ターンデバッグ表示
     const TurnManager& turnManager = m_turnManager;
@@ -208,12 +208,18 @@ TurnManager& BattleManager::GetTurnManager()
 // プレイヤー側取得
 BattlePlayer& BattleManager::GetPlayer()
 {
-    return m_player;
+    return m_player1;
 }
 
 
 // 敵側取得
 BattlePlayer& BattleManager::GetEnemy()
 {
-    return m_enemy;
+    return m_player2;
+}
+
+// 現在のターンのプレイヤー取得
+BattlePlayer& BattleManager::GetCurrentPlayer()
+{
+    return m_turnManager.IsPlayerTurn() ? m_player1 : m_player2;
 }
