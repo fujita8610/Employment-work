@@ -48,7 +48,7 @@ void Unit::Draw()
 
     // プレイヤーと敵で色を変える
     int color =
-        (m_owner == UnitOwner::Player)
+        (m_owner == UnitOwner::Player1)
         ? GetColor(0, 150, 255)
         : GetColor(255, 80, 80);
 

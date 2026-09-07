@@ -49,7 +49,8 @@ void TurnManager::StartBattle()
     //今後は先攻後攻を実装
     m_currentTurn = TurnType::Player1;
 
-    m_playerTurn.Start();
+    // 操作方式に応じたターン処理を開始
+    StartCurrentTurn();
 }
 
 // 更新
@@ -60,9 +61,14 @@ void TurnManager::Update()
         return;
     }
 
-    switch (m_currentTurn)
+	// 現在の操作方式を取得
+    ControllerType controller =
+        GetControllerType(m_currentTurn);
+
+	// 操作方式に応じたターン処理
+    switch (controller)
     {
-    case TurnType::Player1:
+    case ControllerType::Human:
 
         m_playerTurn.Update();
 
@@ -74,7 +80,7 @@ void TurnManager::Update()
         break;
 
 
-    case TurnType::Player2:
+    case ControllerType::AI:
 
         m_enemyTurn.Update();
 
@@ -86,7 +92,15 @@ void TurnManager::Update()
         break;
 
 
-    case TurnType::None:
+    case ControllerType::Auto:
+
+        // 後でAutoTurnを実装
+        break;
+
+
+    case ControllerType::None:
+
+    default:
 
         break;
     }
@@ -99,7 +113,7 @@ void TurnManager::ChangeTurn()
     {
     case TurnType::Player1:
 
-        // 敵ターンへ
+        // Player1 → Player2
         m_currentTurn = TurnType::Player2;
 
         m_enemyTurn.Reset();
@@ -113,7 +127,7 @@ void TurnManager::ChangeTurn()
         // 1ターン終了
         m_turnCount++;
 
-        // プレイヤーターンへ
+        // Player2 → Player1
         m_currentTurn = TurnType::Player1;
 
         m_playerTurn.Reset();
@@ -123,6 +137,47 @@ void TurnManager::ChangeTurn()
 
 
     default:
+        break;
+    }
+}
+
+void TurnManager::StartCurrentTurn()
+{
+    // 現在の操作方式を取得
+    ControllerType controller =
+        GetControllerType(m_currentTurn);
+
+    switch (controller)
+    {
+    case ControllerType::Human:
+
+        // 人間操作
+        m_playerTurn.Reset();
+        m_playerTurn.Start();
+
+        break;
+
+
+    case ControllerType::AI:
+
+        // AI操作
+        m_enemyTurn.Reset();
+        m_enemyTurn.Start();
+
+        break;
+
+
+    case ControllerType::Auto:
+
+        // 現段階では未実装
+        // 後でAutoTurnを追加する
+        break;
+
+
+    case ControllerType::None:
+
+    default:
+
         break;
     }
 }

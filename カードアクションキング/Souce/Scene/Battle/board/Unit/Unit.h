@@ -6,9 +6,9 @@
 
 enum class UnitOwner
 {
-    Player,
+    Player1,
 
-    Enemy
+    Player2
 };
 
 
@@ -51,7 +51,7 @@ public:
 private:
     const CardData* m_card = nullptr;
 
-    UnitOwner m_owner = UnitOwner::Player;
+    UnitOwner m_owner = UnitOwner::Player1;
 
     int m_boardX = 0;
     int m_boardY = 0;

@@ -105,11 +105,6 @@ void PlayerTurn::Reset()
     m_hasDrawn = false;
 }
 
-// 現在のフェーズ取得
-TurnPhase PlayerTurn::GetPhase() const
-{
-    return m_phase;
-}
 
 // フェーズ変更
 void PlayerTurn::ChangePhase(TurnPhase phase)
@@ -147,7 +142,7 @@ void PlayerTurn::UpdateDrawPhase()
 
     // BattleManagerからプレイヤーを取得
     BattlePlayer& player =
-        m_battleManager->GetPlayer();
+        m_battleManager->GetCurrentPlayer();
 
     // 1枚ドロー
     player.DrawCards(1);

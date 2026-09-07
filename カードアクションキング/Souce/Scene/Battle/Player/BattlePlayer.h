@@ -61,7 +61,7 @@ public:
 private:
 
     // 所有者
-    UnitOwner m_owner = UnitOwner::Player;
+    UnitOwner m_owner = UnitOwner::Player1;
 
     // 選択中のカード番号
     // -1なら何も選択していない

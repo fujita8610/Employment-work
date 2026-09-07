@@ -51,11 +51,11 @@ public:
     //ターンマネージャーの取得
     TurnManager& GetTurnManager();
 
-    // プレイヤー側取得
-    BattlePlayer& GetPlayer();
+    // Player1取得
+    BattlePlayer& GetPlayer1();
 
-    // エネミー側取得
-    BattlePlayer& GetEnemy();
+    // Player2取得
+    BattlePlayer& GetPlayer2();
 
 	// 現在のターンのプレイヤー取得
     BattlePlayer& GetCurrentPlayer();

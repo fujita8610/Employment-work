@@ -23,13 +23,13 @@ bool BattleManager::Init()
     }
 
     // プレイヤー初期化
-    if (!m_player1.Init(UnitOwner::Player))
+    if (!m_player1.Init(UnitOwner::Player1))
     {
         return false;
     }
 
     // 敵プレイヤー初期化
-    if (!m_player2.Init(UnitOwner::Enemy))
+    if (!m_player2.Init(UnitOwner::Player2))
     {
         return false;
     }
@@ -61,7 +61,7 @@ void BattleManager::Update()
     //手札クリック処理
 
     // プレイヤーターンのときだけ選択可能
-    if (m_turnManager.IsPlayerTurn())
+    if (m_turnManager.IsHumanTurn())
     {
         int mouseX;
         int mouseY;
@@ -71,15 +71,21 @@ void BattleManager::Update()
         // 左クリックされた瞬間
         if ((GetMouseInput() & MOUSE_INPUT_LEFT) != 0)
         {
+            // 現在ターンのプレイヤーを取得
+            BattlePlayer& currentPlayer =
+                GetCurrentPlayer();
+
+			// クリックされたカードのIndexを取得
             int index =
                 m_handRenderer.GetClickedCardIndex(
-                    m_player1.GetHand(),
+                    currentPlayer.GetHand(),
                     mouseX,
                     mouseY);
 
+			//カードがクリックされていた場合、選択する
             if (index >= 0)
             {
-                m_player1.SelectCard(
+                currentPlayer.SelectCard(
                     static_cast<size_t>(index));
             }
         }
@@ -106,7 +112,7 @@ void BattleManager::Draw()
     //ユニット
     m_board.Draw();
     // プレイヤーの手札
-    m_handRenderer.Draw(m_player1.GetHand());
+    m_handRenderer.Draw(GetCurrentPlayer().GetHand(), GetCurrentPlayer().GetSelectedCardIndex());
 
     // ターンデバッグ表示
     const TurnManager& turnManager = m_turnManager;
@@ -115,11 +121,11 @@ void BattleManager::Draw()
 
     if (turnManager.IsPlayerTurn())
     {
-        turnText = "PLAYER TURN";
+        turnText = "PLAYER１ TURN";
     }
     else if (turnManager.IsEnemyTurn())
     {
-        turnText = "ENEMY TURN";
+        turnText = "PLAYER２ TURN";
     }
 
     DrawString(
@@ -134,7 +140,52 @@ void BattleManager::Draw()
         GetColor(255, 255, 255),
         "TURN : %d",
         turnManager.GetTurnCount());
+
+	// 操作方式デバッグ表示
+    const char* controllerText = "NONE";
+    switch (
+        turnManager.GetControllerType(
+            turnManager.GetCurrentTurn()))
+    {
+    case ControllerType::Human:
+
+        controllerText = "HUMAN";
+
+        break;
+
+
+    case ControllerType::AI:
+
+        controllerText = "AI";
+
+        break;
+
+
+    case ControllerType::Auto:
+
+        controllerText = "AUTO";
+
+        break;
+
+
+    case ControllerType::None:
+
+    default:
+
+        controllerText = "NONE";
+
+        break;
+    }
+
+
+    DrawFormatString(
+        30,
+        90,
+        GetColor(255, 255, 0),
+        "CONTROLLER : %s",
+        controllerText);
 }
+
 // 終了処理
 void BattleManager::Release()
 {
@@ -205,15 +256,14 @@ TurnManager& BattleManager::GetTurnManager()
     return m_turnManager;
 }
 
-// プレイヤー側取得
-BattlePlayer& BattleManager::GetPlayer()
+// プレイヤー1側取得
+BattlePlayer& BattleManager::GetPlayer1()
 {
     return m_player1;
 }
 
-
-// 敵側取得
-BattlePlayer& BattleManager::GetEnemy()
+// プレイヤー2側取得
+BattlePlayer& BattleManager::GetPlayer2()
 {
     return m_player2;
 }
@@ -221,5 +271,23 @@ BattlePlayer& BattleManager::GetEnemy()
 // 現在のターンのプレイヤー取得
 BattlePlayer& BattleManager::GetCurrentPlayer()
 {
-    return m_turnManager.IsPlayerTurn() ? m_player1 : m_player2;
+    switch (m_turnManager.GetCurrentTurn())
+    {
+    case TurnType::Player1:
+
+        return m_player1;
+
+
+    case TurnType::Player2:
+
+        return m_player2;
+
+
+    case TurnType::None:
+
+    default:
+
+        // Noneの場合もとりあえずPlayer1を返す
+        return m_player1;
+    }
 }

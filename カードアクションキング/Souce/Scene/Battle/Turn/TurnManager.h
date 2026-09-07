@@ -73,6 +73,8 @@ private:
     //ターンの切り替え
     void ChangeTurn();
 
+	//ターン開始処理
+    void StartCurrentTurn();
 
 private:
 
