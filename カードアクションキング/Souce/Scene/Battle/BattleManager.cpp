@@ -45,6 +45,9 @@ bool BattleManager::Init()
     {
         return false;
     }
+
+    //í“¬ŠJn
+    m_turnManager.StartBattle();
     return true;
 }
 

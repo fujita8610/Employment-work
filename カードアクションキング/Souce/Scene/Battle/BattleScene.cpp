@@ -15,7 +15,7 @@ bool BattleScene::Init()
     {
         m_battleManager.CreateUnit(
             card,
-            UnitOwner::Player,
+            UnitOwner::Player1,
             2,
             2);
     }
