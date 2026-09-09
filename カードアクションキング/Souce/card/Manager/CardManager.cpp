@@ -27,23 +27,73 @@ bool CardManager::Load(const std::string& csvPath)
         return false;
     }
 
-    // TODO:
-    // CSV → CardData へ変換する処理
-    //
-    // 例
-    //
-    // for (...)
-    // {
-    //     CardData card;
-    //
-    //     card.id = ...
-    //     card.name = ...
-    //     ...
-    //
-    //     m_cards.push_back(card);
-    // }
+    // データが空なら失敗
+    if (csvData.empty())
+    {
+        return false;
+    }
 
-    return true;
+    // 1行目はヘッダーなので飛ばす
+    for (size_t i = 1; i < csvData.size(); ++i)
+    {
+        const auto& row = csvData[i];
+
+        // 必要な列数がない場合はスキップ
+        if (row.size() < 11)
+        {
+            continue;
+        }
+
+        CardData card;
+
+        // ID
+        card.id = std::stoi(row[0]);
+
+        // カード名
+        card.name = row[1];
+
+        // カードタイプ
+        if (row[2] == "Unit")
+        {
+            card.type = CardType::Unit;
+        }
+        else if (row[2] == "Spell")
+        {
+            card.type = CardType::Spell;
+        }
+        else if (row[2] == "Trap")
+        {
+            card.type = CardType::Trap;
+        }
+        else if (row[2] == "King")
+        {
+            card.type = CardType::King;
+        }
+        else
+        {
+            card.type = CardType::None;
+        }
+
+        // コスト
+        card.cost = std::stoi(row[3]);
+
+        // HP
+        card.hp = std::stoi(row[4]);
+
+        // 攻撃力
+        card.attack = std::stoi(row[5]);
+
+        // Effects
+        // ※ここはCardEffectの仕様確認後に実装
+
+        // 画像
+        card.image = row[10];
+
+        // CardDataを登録
+        m_cards.push_back(card);
+    }
+
+    return !m_cards.empty();
 }
 
 //全カードデータの取得

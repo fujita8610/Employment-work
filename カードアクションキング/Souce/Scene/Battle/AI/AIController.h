@@ -65,6 +65,9 @@ public:
 
 private:
 
+	// AIが操作するプレイヤー取得
+    BattlePlayer& GetAIPlayer();
+
     // フェーズ変更
     void ChangePhase(AIActionPhase phase);
 
