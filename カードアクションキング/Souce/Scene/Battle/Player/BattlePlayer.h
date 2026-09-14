@@ -28,6 +28,9 @@ public:
     // カード関連
     // -------------------------
 
+     // デッキを構築
+    bool BuildDeck(const std::vector<int>& cardIDs);
+
     // カードを選択
     void SelectCard(size_t index);
 

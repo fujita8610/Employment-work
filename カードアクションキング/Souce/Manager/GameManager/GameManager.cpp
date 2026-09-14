@@ -25,12 +25,20 @@ bool GameManager::Init()
 
     
 	//リソースマネージャー
-    ResourceManager::GetInstance().Init();
+    if (!ResourceManager::GetInstance().Init())
+    {
+        return false;
+    }
 
 	//UIマネージャー
-    UIManager::GetInstance().Init();
+    if (!UIManager::GetInstance().Init())
+    {
+        return false;
+    }
 
-    if (!CardManager::GetInstance().Load("Data/Z/カードリスト.csv"))
+	//カードマネージャーのCSV読み込み
+    if (!CardManager::GetInstance().Load(
+        "Data\\Z\\カードリスト.csv"))
     {
         return false;
     }

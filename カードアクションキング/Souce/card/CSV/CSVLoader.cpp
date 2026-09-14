@@ -1,4 +1,5 @@
 #include "CSVLoader.h"
+#include "DxLib.h"
 
 // CSVLoaderのCSVファイルを読み込む関数
 #include <fstream>
@@ -17,6 +18,7 @@ bool CSVLoader::LoadCSV(
 
     if (!file.is_open())
     {
+        OutputDebugStringA("CSVLoader: ファイルを開けませんでした。\n");
         return false;
     }
 
@@ -40,6 +42,7 @@ bool CSVLoader::LoadCSV(
 	// ファイルを閉じる
     file.close();
 
+    OutputDebugStringA("CSVLoader: ファイルの読み込みが完了しました。\n");
     return true;
 }
 

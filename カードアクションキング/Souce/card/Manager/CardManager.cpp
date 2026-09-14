@@ -1,8 +1,29 @@
 #include "CardManager.h"
+#include "DxLib.h"
 #include<algorithm>
+#include <string>
 
 //CSV
 #include "../CSV/CSVLoader.h"
+
+// 空欄でも安全に整数へ変換する
+// 空欄や数字ではない値の場合は0を返す
+int ToInt(const std::string& value)
+{
+    if (value.empty())
+    {
+        return 0;
+    }
+
+    try
+    {
+        return std::stoi(value);
+    }
+    catch (...)
+    {
+        return 0;
+    }
+}
 
 // CardManagerのインスタンスを取得
 CardManager& CardManager::GetInstance()
@@ -24,12 +45,14 @@ bool CardManager::Load(const std::string& csvPath)
     // 読み込み失敗
     if (!CSVLoader::LoadCSV(csvPath, csvData))
     {
+        OutputDebugStringA("CardManager: CSVLoaderで失敗しました。\n");
         return false;
     }
 
     // データが空なら失敗
     if (csvData.empty())
     {
+        OutputDebugStringA("CardManager: CSVデータが空です。\n");
         return false;
     }
 
@@ -41,13 +64,14 @@ bool CardManager::Load(const std::string& csvPath)
         // 必要な列数がない場合はスキップ
         if (row.size() < 11)
         {
+            OutputDebugStringA("CardManager: 行データが不正です。\n");
             continue;
         }
 
         CardData card;
 
         // ID
-        card.id = std::stoi(row[0]);
+        card.id = ToInt(row[0]);
 
         // カード名
         card.name = row[1];
@@ -75,13 +99,138 @@ bool CardManager::Load(const std::string& csvPath)
         }
 
         // コスト
-        card.cost = std::stoi(row[3]);
+        card.cost = ToInt(row[3]);
 
         // HP
-        card.hp = std::stoi(row[4]);
+        card.hp = ToInt(row[4]);
 
         // 攻撃力
-        card.attack = std::stoi(row[5]);
+        card.attack = ToInt(row[5]);
+
+		// 攻撃パターン
+        if (row[6] == "Front1")
+        {
+            card.attackPattern = PatternType::Front1;
+        }
+        else if (row[6] == "Front2")
+        {
+            card.attackPattern = PatternType::Front2;
+        }
+        else if (row[6] == "Front3")
+        {
+            card.attackPattern = PatternType::Front3;
+        }
+        else if (row[6] == "Back1")
+        {
+            card.attackPattern = PatternType::Back1;
+        }
+        else if (row[6] == "Left1")
+        {
+            card.attackPattern = PatternType::Left1;
+        }
+        else if (row[6] == "Right1")
+        {
+            card.attackPattern = PatternType::Right1;
+        }
+        else if (row[6] == "DiagonalFront1")
+        {
+            card.attackPattern = PatternType::DiagonalFront1;
+        }
+        else if (row[6] == "DiagonalBack1")
+        {
+            card.attackPattern = PatternType::DiagonalBack1;
+        }
+        else if (row[6] == "FrontAndDiagonal")
+        {
+            card.attackPattern = PatternType::FrontAndDiagonal;
+        }
+        else if (row[6] == "Around1")
+        {
+            card.attackPattern = PatternType::Around1;
+        }
+        else if (row[6] == "Cross1")
+        {
+            card.attackPattern = PatternType::Cross1;
+        }
+        else if (row[6] == "Row")
+        {
+            card.attackPattern = PatternType::Row;
+        }
+        else if (row[6] == "Column")
+        {
+            card.attackPattern = PatternType::Column;
+        }
+        else if (row[6] == "All")
+        {
+            card.attackPattern = PatternType::All;
+        }
+        else
+        {
+            card.attackPattern = PatternType::None;
+        }
+
+		// 移動パターン
+        if (row[7] == "Front1")
+        {
+            card.movePattern = PatternType::Front1;
+        }
+        else if (row[7] == "Front2")
+        {
+            card.movePattern = PatternType::Front2;
+        }
+        else if (row[7] == "Front3")
+        {
+            card.movePattern = PatternType::Front3;
+        }
+        else if (row[7] == "Back1")
+        {
+            card.movePattern = PatternType::Back1;
+        }
+        else if (row[7] == "Left1")
+        {
+            card.movePattern = PatternType::Left1;
+        }
+        else if (row[7] == "Right1")
+        {
+            card.movePattern = PatternType::Right1;
+        }
+        else if (row[7] == "DiagonalFront1")
+        {
+            card.movePattern = PatternType::DiagonalFront1;
+        }
+        else if (row[7] == "DiagonalBack1")
+        {
+            card.movePattern = PatternType::DiagonalBack1;
+        }
+        else if (row[7] == "FrontAndDiagonal")
+        {
+            card.movePattern = PatternType::FrontAndDiagonal;
+        }
+        else if (row[7] == "Around1")
+        {
+            card.movePattern = PatternType::Around1;
+        }
+        else if (row[7] == "Cross1")
+        {
+            card.movePattern = PatternType::Cross1;
+        }
+        else if (row[7] == "Row")
+        {
+            card.movePattern = PatternType::Row;
+        }
+        else if (row[7] == "Column")
+        {
+            card.movePattern = PatternType::Column;
+        }
+        else if (row[7] == "All")
+        {
+            card.movePattern = PatternType::All;
+        }
+        else
+        {
+            card.movePattern = PatternType::None;
+        }
+
 
         // Effects
         // ※ここはCardEffectの仕様確認後に実装
@@ -93,6 +242,7 @@ bool CardManager::Load(const std::string& csvPath)
         m_cards.push_back(card);
     }
 
+	// 読み込み成功したか
     return !m_cards.empty();
 }
 

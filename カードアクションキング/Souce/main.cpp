@@ -22,8 +22,33 @@ int WINAPI WinMain( HINSTANCE,HINSTANCE,LPSTR,int)
 	// ゲームマネージャーのインスタンスを取得
     GameManager& game = GameManager::GetInstance();
 
+	// ゲームマネージャーの初期化
     if (!game.Init())
+    {
+        // 初期化失敗時は画面を表示したままにする
+        while (ProcessMessage() == 0)
+        {
+            ClearDrawScreen();
+
+            DrawString(
+                40,
+                40,
+                "GameManager Init Failed!",
+                GetColor(255, 0, 0));
+
+            DrawString(
+                40,
+                80,
+                "Card Load Failed!",
+                GetColor(255, 0, 0));
+
+            ScreenFlip();
+        }
+
+        DxLib_End();
+
         return -1;
+    }
 
 	// メインループ
     while (ProcessMessage() == 0)

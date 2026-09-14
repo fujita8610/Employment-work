@@ -1,5 +1,7 @@
 #include "BattlePlayer.h"
 
+//デッキ構築
+#include "../../../card/Builder/DeckBuilder.h"
 
 // 初期化
 bool BattlePlayer::Init(UnitOwner owner)
@@ -26,6 +28,15 @@ void BattlePlayer::Release()
     m_hand.Clear();
     m_selectedCardIndex = -1;
 
+}
+
+// デッキ構築
+bool BattlePlayer::BuildDeck(
+    const std::vector<int>& cardIDs)
+{
+    return DeckBuilder::BuildDeck(
+        cardIDs,
+        m_deck);
 }
 
 // カードを選択
