@@ -31,6 +31,12 @@ public:
      // デッキを構築
     bool BuildDeck(const std::vector<int>& cardIDs);
 
+    // デッキを保存
+    bool SaveDeck(const std::string& filePath);
+
+    // デッキを読み込む
+    bool LoadDeck(const std::string& filePath);
+
     // カードを選択
     void SelectCard(size_t index);
 

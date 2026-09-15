@@ -1,7 +1,7 @@
 #pragma once
 
-//Vector
 #include <vector>
+#include <string>
 
 //ƒoƒgƒ‹ŠÖ˜A
 #include "Board/Board.h"

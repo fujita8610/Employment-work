@@ -28,11 +28,22 @@ bool BattleManager::Init()
         return false;
     }
 
+    // 保存されたデッキを読み込む
+    if (!m_player1.LoadDeck("deck_save.txt"))
+    {
+        return false;
+    }
+
+    // デッキをシャッフル
+    m_player1.GetDeck().Shuffle();
+
     // 敵プレイヤー初期化
     if (!m_player2.Init(UnitOwner::Player2))
     {
         return false;
     }
+
+ 
 
     // ターンマネージャー初期化
     if (!m_turnManager.Init(this))
@@ -197,6 +208,10 @@ void BattleManager::Release()
 
     //Renderer
     m_handRenderer.Release();
+
+    // プレイヤー終了
+    m_player1.Release();
+    m_player2.Release();
 
     // 盤面描画終了
     m_renderer.Release();

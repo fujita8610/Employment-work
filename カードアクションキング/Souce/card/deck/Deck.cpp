@@ -87,3 +87,34 @@ bool Deck::IsEmpty() const
 {
     return m_cards.empty();
 }
+
+// セーブ用のデッキデータを作成
+DeckData Deck::CreateDeckData() const
+{
+    DeckData data;
+
+    // デッキ内のカードを確認
+    for (const auto& card : m_cards)
+    {
+        // nullptrは無視
+        if (card == nullptr)
+        {
+            continue;
+        }
+
+        // CardDataを取得
+        const CardData* cardData =
+            card->GetCardData();
+
+        // CardDataが存在しない場合は無視
+        if (cardData == nullptr)
+        {
+            continue;
+        }
+
+        // カードIDを保存
+        data.cardIDs.push_back(cardData->id);
+    }
+
+    return data;
+}

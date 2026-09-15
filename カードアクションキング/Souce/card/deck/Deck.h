@@ -6,6 +6,9 @@
 //カードインスタンス
 #include "../Instance/CardInstance.h"
 
+//カードデータ関連
+#include "../data/DeckData.h"
+
 // 山札を管理するクラス
 class Deck
 {
@@ -33,6 +36,9 @@ public:
 
     // デッキが空か
     bool IsEmpty() const;
+
+    // セーブ用のデータを作成
+    DeckData CreateDeckData() const;
 
 private:
 

@@ -1,6 +1,9 @@
 #include "GameManager.h"
 #include "DxLib.h"
 
+#include <vector>
+#include <memory>
+
 //各マネージャー
 #include"../../Scene/Base/SceneManager.h"
 
@@ -10,6 +13,7 @@
 
 //カードマネージャー
 #include "../../card/Manager/CardManager.h"
+
 //CSVローダー
 #include"../../card/CSV/CSVLoader.h"
 
@@ -42,7 +46,6 @@ bool GameManager::Init()
     {
         return false;
     }
-
 
     return true;
 }
@@ -123,6 +126,9 @@ void GameManager::Draw()
             GetColor(255, 255, 255),
             "ATK : %d",
             card->attack);
+
+      
+    
     }
 
 }

@@ -2,6 +2,10 @@
 
 //デッキ構築
 #include "../../../card/Builder/DeckBuilder.h"
+//デッキデータ
+#include "../../../card/Data/DeckData.h"
+//デッキセーブ
+#include "../../../card/DeckSave/DeckSaveManager.h"
 
 // 初期化
 bool BattlePlayer::Init(UnitOwner owner)
@@ -36,6 +40,36 @@ bool BattlePlayer::BuildDeck(
 {
     return DeckBuilder::BuildDeck(
         cardIDs,
+        m_deck);
+}
+
+// デッキ保存
+bool BattlePlayer::SaveDeck(
+    const std::string& filePath)
+{
+    DeckData data =
+        m_deck.CreateDeckData();
+
+    return DeckSaveManager::SaveDeck(
+        data,
+        filePath);
+}
+
+// デッキ読み込み
+bool BattlePlayer::LoadDeck(
+    const std::string& filePath)
+{
+    DeckData data;
+
+    if (!DeckSaveManager::LoadDeck(
+        data,
+        filePath))
+    {
+        return false;
+    }
+
+    return DeckBuilder::BuildDeck(
+        data.cardIDs,
         m_deck);
 }
 
