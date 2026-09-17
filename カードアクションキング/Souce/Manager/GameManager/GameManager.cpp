@@ -47,6 +47,12 @@ bool GameManager::Init()
         return false;
     }
 
+    // シーンマネージャー初期化
+    if (!SceneManager::GetInstance().Init())
+    {
+        return false;
+    }
+
     return true;
 }
 

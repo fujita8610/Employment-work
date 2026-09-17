@@ -5,7 +5,11 @@
 
 bool BattleScene::Init()
 {
-    m_battleManager.Init();
+    // バトルマネージャー初期化
+    if (!m_battleManager.Init())
+    {
+        return false;
+    }
 
     // テスト用ユニット生成
     const CardData* card =

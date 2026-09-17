@@ -60,6 +60,7 @@ public:
 	// 現在のターンのプレイヤー取得
     BattlePlayer& GetCurrentPlayer();
 
+
 private:
 
     // プレイヤー側

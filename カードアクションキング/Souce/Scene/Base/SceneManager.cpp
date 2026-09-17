@@ -1,5 +1,8 @@
 #include "SceneManager.h"
 
+//各シーン
+#include "../Battle/BattleScene.h"
+
 // SceneManagerのインスタンスを取得
 SceneManager& SceneManager::GetInstance()
 {
@@ -9,6 +12,8 @@ SceneManager& SceneManager::GetInstance()
 
 bool SceneManager::Init()
 {
+    //最初に表示するシーン
+    ChangeScene(new BattleScene());
     return true;
 }
 

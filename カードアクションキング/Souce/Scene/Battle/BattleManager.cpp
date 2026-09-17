@@ -28,8 +28,9 @@ bool BattleManager::Init()
         return false;
     }
 
+    //今後はデッキリストから選べるよう見する
     // 保存されたデッキを読み込む
-    if (!m_player1.LoadDeck("deck_save.txt"))
+    if (!m_player1.LoadDeck("Data\\Deck\\Player\\playersample1.txt"))
     {
         return false;
     }
@@ -43,6 +44,16 @@ bool BattleManager::Init()
         return false;
     }
 
+    //今後はデッキリストから選べるよう見する
+  // 保存されたデッキを読み込む
+    if (!m_player2.LoadDeck(
+        "Data\\Deck\\Enemy\\enemysample1.txt"))
+    {
+        return false;
+    }
+
+    // デッキをシャッフル
+    m_player2.GetDeck().Shuffle();
  
 
     // ターンマネージャー初期化
@@ -127,6 +138,26 @@ void BattleManager::Draw()
     m_board.Draw();
     // プレイヤーの手札
     m_handRenderer.Draw(GetCurrentPlayer().GetHand(), GetCurrentPlayer().GetSelectedCardIndex());
+
+    //デッキ・手札のデバック
+    BattlePlayer& player =
+        GetCurrentPlayer();
+
+    DrawFormatString(
+        30,
+        130,
+        GetColor(0, 255, 255),
+        "DECK : %d",
+        static_cast<int>(
+            player.GetDeck().GetCount()));
+
+    DrawFormatString(
+        30,
+        160,
+        GetColor(0, 255, 255),
+        "HAND : %d",
+        static_cast<int>(
+            player.GetHand().GetCount()));
 
     // ターンデバッグ表示
     const TurnManager& turnManager = m_turnManager;

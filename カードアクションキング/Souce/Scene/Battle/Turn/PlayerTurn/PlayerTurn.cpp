@@ -177,6 +177,3 @@ void PlayerTurn::UpdateEndPhase()
 
     End();
 }
-
-
-
