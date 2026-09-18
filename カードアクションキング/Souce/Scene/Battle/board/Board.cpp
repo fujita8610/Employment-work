@@ -77,20 +77,24 @@ bool Board::IsInside(int x, int y) const
 
 bool Board::PlaceUnit(Unit* unit, int x, int y)
 {
+    //盤面外なら失敗
     if (!IsInside(x, y))
     {
 
-        return true;
+        return false;
     }
 
     Cell* cell = GetCell(x, y);
 
+	// すでにユニットがいる場合は失敗
     if (cell->HasUnit())
     {
         return false;
     }
 
     cell->SetUnit(unit);
+
+	// Unit自身の座標も更新
     unit->SetBoardPosition(x, y);
     return true;
 }

@@ -134,8 +134,7 @@ void BattleManager::Draw()
 {
     //3D盤面
     m_renderer.Draw(m_board);
-    //ユニット
-    m_board.Draw();
+
     // プレイヤーの手札
     m_handRenderer.Draw(GetCurrentPlayer().GetHand(), GetCurrentPlayer().GetSelectedCardIndex());
 
