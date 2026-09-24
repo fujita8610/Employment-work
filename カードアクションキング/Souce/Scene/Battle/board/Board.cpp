@@ -145,23 +145,87 @@ void Board::RemoveUnit(int x, int y)
     GetCell(x, y)->RemoveUnit();
 }
 
+// マウス位置からセル座標を取得
 bool Board::GetCellIndexFromMouse(int& x, int& y)
 {
-    int mouseX = InputManager::GetInstance().GetMouseX();
-    int mouseY = InputManager::GetInstance().GetMouseY();
+    int mouseX;
+    int mouseY;
 
-    mouseX -= BattleConfig::BOARD_X;
-    mouseY -= BattleConfig::BOARD_Y;
+    GetMousePoint(&mouseX, &mouseY);
 
-	// マウスが盤面の外にある場合は無効
-    if (mouseX < 0 || mouseY < 0)
+    // マウス位置から3D空間への線分を作る
+    VECTOR screenPos =
+        VGet(
+            static_cast<float>(mouseX),
+            static_cast<float>(mouseY),
+            0.0f);
+
+    // カメラに近い位置
+    VECTOR startPos =
+        ConvScreenPosToWorldPos(screenPos);
+
+    // カメラから遠い位置
+    screenPos.z = 1.0f;
+
+    VECTOR endPos =
+        ConvScreenPosToWorldPos(screenPos);
+
+    // Y=0の平面との交点を求める
+    float directionY =
+        endPos.y - startPos.y;
+
+    // レイがY=0と交わらない場合
+    if (directionY == 0.0f)
     {
         return false;
     }
 
-	// マウス座標をセル座標に変換
-    x = mouseX / BattleConfig::CELL_SIZE;
-    y = mouseY / BattleConfig::CELL_SIZE;
+    float t =
+        -startPos.y / directionY;
+
+    // 線分の範囲外なら無効
+    if (t < 0.0f || t > 1.0f)
+    {
+        return false;
+    }
+
+    // Y=0との交点
+    VECTOR hitPos;
+
+    hitPos.x =
+        startPos.x +
+        (endPos.x - startPos.x) * t;
+
+    hitPos.y = 0.0f;
+
+    hitPos.z =
+        startPos.z +
+        (endPos.z - startPos.z) * t;
+
+    // 盤面全体のワールドサイズ
+    float boardWidth =
+        BattleConfig::BOARD_WIDTH *
+        BattleConfig::CELL_SIZE;
+
+    float boardHeight =
+        BattleConfig::BOARD_HEIGHT *
+        BattleConfig::CELL_SIZE;
+
+    // 盤面左上を原点に戻す
+    float boardStartX =
+        -boardWidth / 2.0f;
+
+    float boardStartZ =
+        -boardHeight / 2.0f;
+
+    // セル座標へ変換
+    x = static_cast<int>(
+        (hitPos.x - boardStartX) /
+        BattleConfig::CELL_SIZE);
+
+    y = static_cast<int>(
+        (hitPos.z - boardStartZ) /
+        BattleConfig::CELL_SIZE);
 
     return IsInside(x, y);
 }

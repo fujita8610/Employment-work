@@ -19,8 +19,8 @@
 #include "Player/BattlePlayer.h"
 
 //各マネージャー
-//ターンマネージャー
 #include "Turn/TurnManager.h"
+#include "../../Manager/Input/InputManager.h"
 
 //Renderer
 //Hand
@@ -60,6 +60,8 @@ public:
 	// 現在のターンのプレイヤー取得
     BattlePlayer& GetCurrentPlayer();
 
+	// 選択中のカードを使用する
+    bool UseSelectedCard(int x, int y);
 
 private:
 
