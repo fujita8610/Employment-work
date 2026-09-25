@@ -22,6 +22,7 @@ bool Unit::Init(const CardData* card)
     m_boardY = 0;
 
     m_isDead = false;
+    m_isSelected = false;
     m_hasActed = false;
 
     return true;
@@ -189,4 +190,15 @@ void Unit::SetActed(bool acted)
 bool Unit::HasActed() const
 {
     return m_hasActed;
+}
+
+//選択状態
+void Unit::SetSelected(bool selected)
+{
+    m_isSelected = selected;
+}
+
+bool Unit::IsSelected() const
+{
+    return m_isSelected;
 }

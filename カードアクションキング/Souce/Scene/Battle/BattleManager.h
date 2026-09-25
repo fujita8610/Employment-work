@@ -26,6 +26,9 @@
 //Hand
 #include "Renderer/Hand/HandRenderer.h"
 
+//UI
+class Button;
+
 class BattleManager
 {
 public:
@@ -89,4 +92,8 @@ private:
 
     //盤面上のユニット
     std::vector<Unit*> m_units;
+
+	//UI関連
+    // ターン終了ボタン
+    Button* m_endTurnButton = nullptr;
 };

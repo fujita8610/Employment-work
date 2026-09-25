@@ -44,6 +44,10 @@ public:
     void Heal(int value);
     bool IsDead() const;
 
+    // 選択状態
+    void SetSelected(bool selected);
+    bool IsSelected() const;
+
     // 行動済み
     void SetActed(bool acted);
     bool HasActed() const;
@@ -60,6 +64,6 @@ private:
     int m_attack = 0;
 
     bool m_isDead = false;
-
+    bool m_isSelected = false;
     bool m_hasActed = false;
 };

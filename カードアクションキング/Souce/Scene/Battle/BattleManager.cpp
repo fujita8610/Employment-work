@@ -1,6 +1,9 @@
 #include "DxLib.h"
 #include "BattleManager.h"
 
+#include "../../UI/UIManager.h"
+#include "../../UI/Button/Button.h"
+
 // 初期化
 bool BattleManager::Init()
 {
@@ -67,6 +70,25 @@ bool BattleManager::Init()
     {
         return false;
     }
+
+    // ターン終了ボタン作成
+    m_endTurnButton = new Button();
+
+    m_endTurnButton->SetPosition(1350, 750);
+    m_endTurnButton->SetSize(180, 70);
+    m_endTurnButton->SetText("TURN END");
+
+    m_endTurnButton->SetOnClick([this]()
+        {
+            // 人間操作中のみターン終了
+            if (m_turnManager.IsHumanTurn())
+            {
+                m_turnManager.EndCurrentTurn();
+            }
+        });
+
+    // UIManagerへ登録
+    UIManager::GetInstance().AddUI(m_endTurnButton);
 
     // デバッグ用に初期手札を5枚引く
     m_player1.DrawCards(5);
@@ -277,6 +299,8 @@ void BattleManager::Release()
     }
 
     m_units.clear();
+
+    m_endTurnButton = nullptr;
 }
 
 // ユニット生成
