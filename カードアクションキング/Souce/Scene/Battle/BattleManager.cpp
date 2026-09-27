@@ -1,6 +1,8 @@
 #include "DxLib.h"
 #include "BattleManager.h"
 
+#include <cstdlib>
+
 #include "../../UI/UIManager.h"
 #include "../../UI/Button/Button.h"
 
@@ -119,14 +121,15 @@ void BattleManager::Update()
 
         GetMousePoint(&mouseX, &mouseY);
 
-        // 左クリックされた瞬間
+        
+       // 左クリックされた瞬間
         if (InputManager::GetInstance().IsMouseDown(
             MOUSE_INPUT_LEFT))
         {
             BattlePlayer& currentPlayer =
                 GetCurrentPlayer();
 
-            // すでにカードを選択しているか
+            // ① カードを選択中
             if (currentPlayer.GetSelectedCard() != nullptr)
             {
                 // 3D盤面上のセルを取得
@@ -141,19 +144,54 @@ void BattleManager::Update()
                         cell->GetY());
                 }
             }
+
+            // ② ユニットを選択中
+            else if (m_selectedUnit != nullptr)
+            {
+                // 3D盤面上のセルを取得
+                Cell* cell =
+                    m_board.GetCellFromMouse();
+
+                if (cell != nullptr)
+                {
+                    // 選択中ユニットを移動
+                    MoveSelectedUnit(
+                        cell->GetX(),
+                        cell->GetY());
+                }
+            }
+
+            // ③ 何も選択していない
             else
             {
-                // 手札からクリックされたカードを取得
-                int index =
-                    m_handRenderer.GetClickedCardIndex(
-                        currentPlayer.GetHand(),
-                        mouseX,
-                        mouseY);
+                // まず盤面をクリックしたか確認
+                Cell* cell =
+                    m_board.GetCellFromMouse();
 
-                if (index >= 0)
+                if (cell != nullptr &&
+                    cell->HasUnit())
                 {
-                    currentPlayer.SelectCard(
-                        static_cast<size_t>(index));
+                    // そのマスのユニットを取得
+                    Unit* unit =
+                        cell->GetUnit();
+
+                    // 自分のユニットなら選択
+                    SelectUnit(unit);
+                }
+                else
+                {
+                    // 盤面でなければ手札を確認
+                    int index =
+                        m_handRenderer.GetClickedCardIndex(
+                            currentPlayer.GetHand(),
+                            mouseX,
+                            mouseY);
+
+                    if (index >= 0)
+                    {
+                        currentPlayer.SelectCard(
+                            static_cast<size_t>(index));
+                    }
                 }
             }
         }
@@ -281,6 +319,9 @@ void BattleManager::Release()
 
     //Renderer
     m_handRenderer.Release();
+
+    //選択中のユニット解除
+    ClearSelectedUnit();
 
     // プレイヤー終了
     m_player1.Release();
@@ -463,6 +504,92 @@ bool BattleManager::UseSelectedCard(int x, int y)
 
     // カード選択解除
     player.ClearSelectedCard();
+
+    return true;
+}
+
+void BattleManager::SelectUnit(Unit* unit)
+{
+    // nullptrなら何もしない
+    if (unit == nullptr)
+    {
+        return;
+    }
+
+    // 自分のユニット以外は選択できない
+    BattlePlayer& player = GetCurrentPlayer();
+
+    if (unit->GetOwner() != player.GetOwner())
+    {
+        return;
+    }
+
+    // 行動済みなら選択できない
+    if (unit->HasActed())
+    {
+        return;
+    }
+
+    // すでに別のユニットを選択している場合
+    if (m_selectedUnit != nullptr)
+    {
+        m_selectedUnit->SetSelected(false);
+    }
+
+    // 新しいユニットを選択
+    m_selectedUnit = unit;
+
+    m_selectedUnit->SetSelected(true);
+}
+
+void BattleManager::ClearSelectedUnit()
+{
+    if (m_selectedUnit == nullptr)
+    {
+        return;
+    }
+
+    m_selectedUnit->SetSelected(false);
+
+    m_selectedUnit = nullptr;
+}
+
+bool BattleManager::MoveSelectedUnit(int x, int y)
+{
+    if (m_selectedUnit == nullptr)
+    {
+        return false;
+    }
+
+    // 移動前の座標
+    int fromX = m_selectedUnit->GetBoardX();
+    int fromY = m_selectedUnit->GetBoardY();
+
+    // 移動距離
+    int distanceX = abs(x - fromX);
+    int distanceY = abs(y - fromY);
+
+    // 上下左右1マスのみ
+    if (distanceX + distanceY != 1)
+    {
+        return false;
+    }
+
+    // 盤面移動
+    if (!m_board.MoveUnit(
+        fromX,
+        fromY,
+        x,
+        y))
+    {
+        return false;
+    }
+
+    // 行動済みにする
+    m_selectedUnit->SetActed(true);
+
+    // 選択解除
+    ClearSelectedUnit();
 
     return true;
 }

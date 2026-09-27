@@ -66,6 +66,15 @@ public:
 	// 選択中のカードを使用する
     bool UseSelectedCard(int x, int y);
 
+    // ユニット選択
+    void SelectUnit(Unit* unit);
+
+    // ユニット選択解除
+    void ClearSelectedUnit();
+
+    // ユニット移動
+    bool MoveSelectedUnit(int x, int y);
+
 private:
 
     // プレイヤー側
@@ -92,6 +101,9 @@ private:
 
     //盤面上のユニット
     std::vector<Unit*> m_units;
+
+    // 現在選択中のユニット
+    Unit* m_selectedUnit = nullptr;
 
 	//UI関連
     // ターン終了ボタン

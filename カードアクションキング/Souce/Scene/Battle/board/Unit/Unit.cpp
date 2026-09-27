@@ -48,10 +48,21 @@ void Unit::Draw()
 
 
     // プレイヤーと敵で色を変える
-    int color =
-        (m_owner == UnitOwner::Player1)
-        ? GetColor(0, 150, 255)
-        : GetColor(255, 80, 80);
+    int color;
+
+    if (m_isSelected)
+    {
+        // 選択中は黄色
+        color = GetColor(255, 220, 0);
+    }
+    else
+    {
+        // プレイヤーと敵で色を変える
+        color =
+            (m_owner == UnitOwner::Player1)
+            ? GetColor(0, 150, 255)
+            : GetColor(255, 80, 80);
+    }
 
     DrawBox(
         drawX + 16,
