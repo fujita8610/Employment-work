@@ -48,6 +48,20 @@ const std::vector<PatternOffset>& PatternDatabase::GetPattern(PatternType type)
         { -1,  1 }, { 0,  1 }, { 1,  1 }
     };
 
+    static const std::vector<PatternOffset> back1 =
+    {
+        // Œã•û1ƒ}ƒX
+        { 0, 1 }
+    };
+
+    static const std::vector<PatternOffset> cross1 =
+    {
+        { 0, -1 },
+        { 0,  1 },
+        {-1,  0 },
+        { 1,  0 }
+    };
+
     switch (type)
     {
     case PatternType::Front1:
@@ -67,6 +81,12 @@ const std::vector<PatternOffset>& PatternDatabase::GetPattern(PatternType type)
 
     case PatternType::Around1:
         return around1;
+
+    case PatternType::Back1:
+        return back1;
+
+    case PatternType::Cross1:
+        return cross1;
 
     default:
         return none;

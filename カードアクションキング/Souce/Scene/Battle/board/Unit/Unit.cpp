@@ -102,6 +102,13 @@ void Unit::Draw()
         GetColor(255, 100, 100),
         "ATK:%d",
         m_attack);
+
+    //選択中のユニット表示
+    if (m_isSelected)
+    {
+        // 選択中は黄色
+        color = GetColor(255, 220, 0);
+    }
 }
 
 // 盤面座標

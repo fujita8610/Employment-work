@@ -118,6 +118,13 @@ void PlayerTurn::ChangePhase(TurnPhase phase)
 // -------------------------
 void PlayerTurn::UpdateStartPhase()
 {
+    // 現在のプレイヤーを取得
+    BattlePlayer& player =
+        m_battleManager->GetCurrentPlayer();
+
+    // 自分のユニットを再び行動可能にする
+    m_battleManager->ResetUnitActions(player.GetOwner());
+
     // 今後ここに
     // ・ターン開始時効果
     // ・ユニット行動可能状態に戻す

@@ -10,6 +10,7 @@
 
 //カード関連
 #include "../../card/data/CardData.h"
+#include "../../card/data/Pattern/PatternDatabase.h"
 #include "../../card/Manager/CardManager.h"
 
 //カメラ
@@ -63,6 +64,9 @@ public:
 	// 現在のターンのプレイヤー取得
     BattlePlayer& GetCurrentPlayer();
 
+    // 現在のターンを終了
+    void EndCurrentTurn();
+
 	// 選択中のカードを使用する
     bool UseSelectedCard(int x, int y);
 
@@ -74,6 +78,9 @@ public:
 
     // ユニット移動
     bool MoveSelectedUnit(int x, int y);
+
+    // ターン開始時にユニットの行動状態をリセット
+    void ResetUnitActions(UnitOwner owner);
 
 private:
 

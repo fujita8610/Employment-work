@@ -309,6 +309,26 @@ void BattleManager::Draw()
         GetColor(255, 255, 0),
         "CONTROLLER : %s",
         controllerText);
+
+    // 選択中ユニットのデバッグ表示
+    if (m_selectedUnit != nullptr)
+    {
+        DrawFormatString(
+            30,
+            190,
+            GetColor(255, 220, 0),
+            "SELECTED UNIT : (%d, %d)",
+            m_selectedUnit->GetBoardX(),
+            m_selectedUnit->GetBoardY());
+    }
+    else
+    {
+        DrawString(
+            30,
+            190,
+            "SELECTED UNIT : NONE",
+            GetColor(255, 255, 255));
+    }
 }
 
 // 終了処理
@@ -342,6 +362,19 @@ void BattleManager::Release()
     m_units.clear();
 
     m_endTurnButton = nullptr;
+}
+
+// 現在のターンを終了
+void BattleManager::EndCurrentTurn()
+{
+    // 選択中のユニットを解除
+    ClearSelectedUnit();
+
+    // 現在のプレイヤーのカード選択を解除
+    GetCurrentPlayer().ClearSelectedCard();
+
+    // ターンマネージャーにターン終了を通知
+    m_turnManager.EndCurrentTurn();
 }
 
 // ユニット生成
@@ -426,6 +459,7 @@ BattlePlayer& BattleManager::GetCurrentPlayer()
     }
 }
 
+// 選択中のカードを使用する
 bool BattleManager::UseSelectedCard(int x, int y)
 {
 	// 現在のターンのプレイヤー取得
@@ -508,6 +542,7 @@ bool BattleManager::UseSelectedCard(int x, int y)
     return true;
 }
 
+// ユニット選択
 void BattleManager::SelectUnit(Unit* unit)
 {
     // nullptrなら何もしない
@@ -542,6 +577,7 @@ void BattleManager::SelectUnit(Unit* unit)
     m_selectedUnit->SetSelected(true);
 }
 
+// 選択中のユニットを解除
 void BattleManager::ClearSelectedUnit()
 {
     if (m_selectedUnit == nullptr)
@@ -554,9 +590,18 @@ void BattleManager::ClearSelectedUnit()
     m_selectedUnit = nullptr;
 }
 
+// ユニット移動
 bool BattleManager::MoveSelectedUnit(int x, int y)
 {
     if (m_selectedUnit == nullptr)
+    {
+        return false;
+    }
+
+    const CardData* cardData =
+        m_selectedUnit->GetCardData();
+
+    if (cardData == nullptr)
     {
         return false;
     }
@@ -565,22 +610,33 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
     int fromX = m_selectedUnit->GetBoardX();
     int fromY = m_selectedUnit->GetBoardY();
 
-    // 移動距離
-    int distanceX = abs(x - fromX);
-    int distanceY = abs(y - fromY);
+    // カードに設定されている移動パターンを取得
+    const std::vector<PatternOffset>& pattern =
+        PatternDatabase::GetPattern(cardData->movePattern);
 
-    // 上下左右1マスのみ
-    if (distanceX + distanceY != 1)
+    // 移動先がパターンに含まれているか確認
+    bool canMove = false;
+
+    for (const PatternOffset& offset : pattern)
+    {
+        int targetX = fromX + offset.x;
+        int targetY = fromY + offset.y;
+
+        if (targetX == x && targetY == y)
+        {
+            canMove = true;
+            break;
+        }
+    }
+
+    // 移動パターンに含まれていない
+    if (!canMove)
     {
         return false;
     }
 
-    // 盤面移動
-    if (!m_board.MoveUnit(
-        fromX,
-        fromY,
-        x,
-        y))
+    // 実際に移動
+    if (!m_board.MoveUnit(fromX, fromY, x, y))
     {
         return false;
     }
@@ -592,4 +648,22 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
     ClearSelectedUnit();
 
     return true;
+}
+
+// ターン開始時にユニットの行動状態をリセット
+void BattleManager::ResetUnitActions(UnitOwner owner)
+{
+    for (Unit* unit : m_units)
+    {
+        if (unit == nullptr)
+        {
+            continue;
+        }
+
+        // 自分のユニットだけ行動可能状態に戻す
+        if (unit->GetOwner() == owner)
+        {
+            unit->SetActed(false);
+        }
+    }
 }
