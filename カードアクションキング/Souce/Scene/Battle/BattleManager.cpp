@@ -5,6 +5,7 @@
 
 #include "../../UI/UIManager.h"
 #include "../../UI/Button/Button.h"
+#include "../../card/data/Pattern/PatternDatabase.h"
 
 // 初期化
 bool BattleManager::Init()
@@ -85,7 +86,7 @@ bool BattleManager::Init()
             // 人間操作中のみターン終了
             if (m_turnManager.IsHumanTurn())
             {
-                m_turnManager.EndCurrentTurn();
+                EndCurrentTurn();
             }
         });
 
@@ -329,6 +330,22 @@ void BattleManager::Draw()
             "SELECTED UNIT : NONE",
             GetColor(255, 255, 255));
     }
+
+    DrawFormatString(
+        30,
+        220,
+        GetColor(255, 255, 0),
+        "HUMAN TURN : %s",
+        m_turnManager.IsHumanTurn() ? "TRUE" : "FALSE");
+
+    DrawFormatString(
+        30,
+        250,
+        GetColor(255, 255, 0),
+        "MOUSE LEFT : %s",
+        InputManager::GetInstance().IsMouseDown(MOUSE_INPUT_LEFT)
+        ? "DOWN"
+        : "NONE");
 }
 
 // 終了処理
