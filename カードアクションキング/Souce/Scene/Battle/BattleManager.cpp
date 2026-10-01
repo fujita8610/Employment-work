@@ -628,8 +628,8 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
     int fromY = m_selectedUnit->GetBoardY();
 
     // カードに設定されている移動パターンを取得
-    const std::vector<PatternOffset>& pattern =
-        PatternDatabase::GetPattern(cardData->movePattern);
+    const std::vector<PatternOffset>& pattern
+        = PatternDatabase::GetPattern(cardData->movePattern);
 
     // 移動先がパターンに含まれているか確認
     bool canMove = false;
