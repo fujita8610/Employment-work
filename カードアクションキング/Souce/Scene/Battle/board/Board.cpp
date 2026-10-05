@@ -218,6 +218,26 @@ bool Board::GetCellIndexFromMouse(int& x, int& y)
     float boardStartZ =
         -boardHeight / 2.0f;
 
+    // 盤面の右端・奥端
+    float boardEndX =
+        boardStartX +
+        BattleConfig::BOARD_WIDTH *
+        BattleConfig::CELL_SIZE;
+
+    float boardEndZ =
+        boardStartZ +
+        BattleConfig::BOARD_HEIGHT *
+        BattleConfig::CELL_SIZE;
+
+    // 盤面の外なら無効
+    if (hitPos.x < boardStartX ||
+        hitPos.x >= boardEndX ||
+        hitPos.z < boardStartZ ||
+        hitPos.z >= boardEndZ)
+    {
+        return false;
+    }
+
     // セル座標へ変換
     x = static_cast<int>(
         (hitPos.x - boardStartX) /

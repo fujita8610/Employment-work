@@ -7,59 +7,60 @@ const std::vector<PatternOffset>& PatternDatabase::GetPattern(PatternType type)
     static const std::vector<PatternOffset> front1 =
     {
 		// 前方1マス
-        { 0, -1 }
+        { 0, 1 }
     };
 
     static const std::vector<PatternOffset> front2 =
     {
 		// 前方2マス
-        { 0, -1 },
-        { 0, -2 }
+        { 0, 1 },
+        { 0, 2 }
     };
 
     static const std::vector<PatternOffset> front3 =
     {
 		// 前方3マス
-        { 0, -1 },
-        { 0, -2 },
-        { 0, -3 }
+        { 0, 1 },
+        { 0, 2 },
+        { 0, 3 }
     };
 
     static const std::vector<PatternOffset> diagonalFront1 =
     {
         // 前方斜め1マス
-        { -1, -1 },
-        {  1, -1 }
+        { -1, 1 },
+        {  1, 1 }
     };
 
     static const std::vector<PatternOffset> frontAndDiagonal =
     {
 		// 前方1マスと斜め前方1マス
-        {  0, -1 },
-        { -1, -1 },
-        {  1, -1 }
+        {  0, 1 },
+        { -1, 1 },
+        {  1, 1 }
     };
 
     static const std::vector<PatternOffset> around1 =
     {
 		// 周囲1マス
-        { -1, -1 }, { 0, -1 }, { 1, -1 },
+         { -1, -1 }, { 0, -1 }, { 1, -1 },
         { -1,  0 },             { 1,  0 },
-        { -1,  1 }, { 0,  1 }, { 1,  1 }
+        { -1,  1 }, { 0,  1 }, { 1, 1 }
     };
 
     static const std::vector<PatternOffset> back1 =
     {
         // 後方1マス
-        { 0, 1 }
+        { 0, -1 }
     };
 
     static const std::vector<PatternOffset> cross1 =
     {
+		// 十字1マス
         { 0, -1 },
         { 0,  1 },
-        {-1,  0 },
-        { 1,  0 }
+        { -1, 0 },
+        { 1, 0 }
     };
 
     switch (type)

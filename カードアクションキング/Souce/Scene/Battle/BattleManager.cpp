@@ -620,6 +620,7 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
 
     if (cardData == nullptr)
     {
+        OutputDebugStringA("MoveSelectedUnit : CardData is NULL\n");
         return false;
     }
 
@@ -627,19 +628,56 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
     int fromX = m_selectedUnit->GetBoardX();
     int fromY = m_selectedUnit->GetBoardY();
 
+    // CSVから読み込んだ移動パターンを確認
+    OutputDebugStringA("===== Move Debug =====\n");
+
+    OutputDebugStringA(
+        ("Unit : " + cardData->name + "\n").c_str());
+
+    OutputDebugStringA(
+        ("MovePattern : " +
+            std::to_string(static_cast<int>(cardData->movePattern)) + "\n").c_str());
+
+    OutputDebugStringA(
+        ("From : (" +std::to_string(fromX) +", " + std::to_string(fromY) + ")\n").c_str());
+
+    OutputDebugStringA(
+        ("Target : (" + std::to_string(x) + ", " + std::to_string(y) + ")\n").c_str());
+
+
     // カードに設定されている移動パターンを取得
     const std::vector<PatternOffset>& pattern
         = PatternDatabase::GetPattern(cardData->movePattern);
+
+    // パターンが空か確認
+    if (pattern.empty())
+    {
+        OutputDebugStringA("MovePattern : EMPTY\n");
+        return false;
+    }
 
     // 移動先がパターンに含まれているか確認
     bool canMove = false;
 
     for (const PatternOffset& offset : pattern)
     {
+		// 移動先座標を計算
         int targetX = fromX + offset.x;
         int targetY = fromY + offset.y;
 
-        if (targetX == x && targetY == y)
+        // Player2の場合は前後を反転
+        if (m_selectedUnit->GetOwner() == UnitOwner::Player2)
+        {
+            offset.y = -offset.y;
+        }
+
+        OutputDebugStringA(
+            ("Pattern Target : (" + std::to_string(targetX) +", " + std::to_string(targetY) +")\n").c_str());
+
+  
+
+        if (targetX == x &&
+            targetY == y)
         {
             canMove = true;
             break;
@@ -649,12 +687,14 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
     // 移動パターンに含まれていない
     if (!canMove)
     {
+        OutputDebugStringA("Move : INVALID TARGET\n");
         return false;
     }
 
     // 実際に移動
     if (!m_board.MoveUnit(fromX, fromY, x, y))
     {
+        OutputDebugStringA("Move : Board::MoveUnit FAILED\n");
         return false;
     }
 
@@ -663,6 +703,8 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
 
     // 選択解除
     ClearSelectedUnit();
+
+    OutputDebugStringA("Move : SUCCESS\n");
 
     return true;
 }
