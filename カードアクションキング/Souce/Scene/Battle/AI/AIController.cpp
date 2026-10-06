@@ -6,6 +6,10 @@
 //プレイヤー
 #include "../Player/BattlePlayer.h"
 
+#include "../BattleConfig.h"
+#include "../board/Board.h"
+#include "../board/Cell/Cell.h"
+
 //初期化
 bool AIController::Init(
     BattleManager* battleManager,
@@ -139,17 +143,64 @@ void AIController::UpdateSelectCard()
 {
     BattlePlayer& player = GetAIPlayer();
 
-    // 手札がない場合はターン終了
-    if (player.GetHand().GetCount() == 0)
+    // 選択中のカードを取得
+    const CardInstance* selectedCard =
+        player.GetSelectedCard();
+
+    // カードが選択されていない場合
+    if (selectedCard == nullptr)
     {
         ChangePhase(AIActionPhase::End);
         return;
     }
 
-    // 現段階では手札の0番目を選択
-    player.SelectCard(0);
+    // 元カードデータを取得
+    const CardData* cardData =
+        selectedCard->GetCardData();
 
-    ChangePhase(AIActionPhase::UseCard);
+    if (cardData == nullptr)
+    {
+        player.ClearSelectedCard();
+
+        ChangePhase(AIActionPhase::End);
+        return;
+    }
+
+    // 現段階ではUnitカードだけ使用する
+    if (cardData->type != CardType::Unit)
+    {
+        player.ClearSelectedCard();
+
+        ChangePhase(AIActionPhase::End);
+        return;
+    }
+
+    // 敵側から空いているマスを探す
+    for (int y = BattleConfig::BOARD_HEIGHT - 1; y >= 0; --y)
+    {
+        for (int x = 0; x < BattleConfig::BOARD_WIDTH; ++x)
+        {
+            Cell* cell =
+                m_battleManager->GetBoard().GetCell(x, y);
+
+            if (cell == nullptr)
+            {
+                continue;
+            }
+
+            // 空いているマスならカードを使用
+            if (!cell->HasUnit())
+            {
+                if (m_battleManager->UseSelectedCard(x, y))
+                {
+                    ChangePhase(AIActionPhase::SelectUnit);
+                    return;
+                }
+            }
+        }
+    }
+
+    // 手札がない場合はターン終了
 }
 
 // カード使用

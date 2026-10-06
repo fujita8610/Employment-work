@@ -3,6 +3,7 @@
 #include "../TurnBase.h"
 #include "../../TurnPhase/TurnPhase.h"
 
+#include "../../AI/AIController.h"
 
 class BattleManager;
 
@@ -45,6 +46,9 @@ private:
 
     BattleManager* m_battleManager = nullptr;
 
+    // AI制御
+    AIController m_aiController;
+
     // 現在のフェーズ
     TurnPhase m_phase = TurnPhase::None;
 
@@ -53,4 +57,8 @@ private:
 
     // このターンにドロー済みか
     bool m_hasDrawn = false;
+    // このターンでAIを開始したか
+    bool m_aiStarted = false;
+
+
 };

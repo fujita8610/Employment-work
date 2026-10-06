@@ -16,6 +16,12 @@ bool EnemyTurn::Init(BattleManager* battleManager)
 
     m_battleManager = battleManager;
 
+	// AIController初期化
+    if (!m_aiController.Init(battleManager,UnitOwner::Player2))
+    {
+        return false;
+    }
+
     Reset();
 
     return true;
@@ -109,6 +115,7 @@ void EnemyTurn::Reset()
 
     m_started = false;
     m_finished = false;
+    m_aiStarted = false;
 
     m_hasDrawn = false;
 }
@@ -129,11 +136,8 @@ void EnemyTurn::ChangePhase(TurnPhase phase)
 
 void EnemyTurn::UpdateStartPhase()
 {
-    // 今後ここに
-    // ・AIの行動準備
-    // ・ユニット行動可能化
-    // ・ターン開始効果
-    // などを追加
+     // AIを開始
+    m_aiController.Start();
 
     ChangePhase(TurnPhase::Draw);
 }
@@ -171,18 +175,21 @@ void EnemyTurn::UpdateDrawPhase()
 
 void EnemyTurn::UpdateMainPhase()
 {
-    // ここからAIを作っていく
-    //
-    // 例：
-    // 1. 手札を確認
-    // 2. 使用カードを決定
-    // 3. ユニットを配置
-    // 4. 移動
-    // 5. 攻撃
-    // 6. 行動終了
+    // AI開始
+    if (!m_aiStarted)
+    {
+        m_aiController.Start();
+        m_aiStarted = true;
+    }
 
-    // 現在はテストとして即終了
-    ChangePhase(TurnPhase::End);
+    // AIを更新
+    m_aiController.Update();
+
+    // AIが終了したら敵ターン終了
+    if (m_aiController.IsFinished())
+    {
+        ChangePhase(TurnPhase::End);
+    }
 }
 
 
@@ -192,10 +199,6 @@ void EnemyTurn::UpdateMainPhase()
 
 void EnemyTurn::UpdateEndPhase()
 {
-    // 今後ここに
-    // ・ターン終了効果
-    // ・状態異常
-    // などを追加
-
+    m_aiController.Reset();
     End();
 }

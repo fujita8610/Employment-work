@@ -662,22 +662,25 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
     for (const PatternOffset& offset : pattern)
     {
 		// ˆÚ“®æÀ•W‚ğŒvZ
-        int targetX = fromX + offset.x;
-        int targetY = fromY + offset.y;
+        int offsetX = offset.x;
+        int offsetY = offset.y;
 
         // Player2‚Ìê‡‚Í‘OŒã‚ğ”½“]
         if (m_selectedUnit->GetOwner() == UnitOwner::Player2)
         {
-            offset.y = -offset.y;
+            offsetY = -offsetY;
         }
+
+        // ˆÚ“®æÀ•W‚ğŒvZ
+        int targetX = fromX + offsetX;
+        int targetY = fromY + offsetY;
 
         OutputDebugStringA(
             ("Pattern Target : (" + std::to_string(targetX) +", " + std::to_string(targetY) +")\n").c_str());
 
   
 
-        if (targetX == x &&
-            targetY == y)
+        if (targetX == x && targetY == y)
         {
             canMove = true;
             break;
