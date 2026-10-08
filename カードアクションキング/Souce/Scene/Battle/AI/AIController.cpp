@@ -1,14 +1,22 @@
 #include "AIController.h"
 
+//ライブラリ
+#include <vector>
+#include <random>
+#include <utility>
+
 //battleマネージャー
 #include "../BattleManager.h"
 
 //プレイヤー
 #include "../Player/BattlePlayer.h"
 
+//battle関連
 #include "../BattleConfig.h"
 #include "../board/Board.h"
 #include "../board/Cell/Cell.h"
+
+#include "../../../card/data/Pattern/PatternDatabase.h"
 
 //初期化
 bool AIController::Init(
@@ -143,84 +151,271 @@ void AIController::UpdateSelectCard()
 {
     BattlePlayer& player = GetAIPlayer();
 
+    // 手札がない場合はターン終了
+    if (player.GetHand().GetCount() == 0)
+    {
+        ChangePhase(AIActionPhase::End);
+        return;
+    }
+
+    // 今回は手札の0番目のカードを選択
+    player.SelectCard(0);
+
+    // 選択できたか確認
+    if (player.GetSelectedCard() == nullptr)
+    {
+        ChangePhase(AIActionPhase::End);
+        return;
+    }
+
+    ChangePhase(AIActionPhase::UseCard);
+}
+
+// カード使用
+void AIController::UpdateUseCard()
+{
+    BattlePlayer& player = GetAIPlayer();
+
     // 選択中のカードを取得
     const CardInstance* selectedCard =
         player.GetSelectedCard();
 
-    // カードが選択されていない場合
     if (selectedCard == nullptr)
     {
         ChangePhase(AIActionPhase::End);
         return;
     }
 
-    // 元カードデータを取得
     const CardData* cardData =
         selectedCard->GetCardData();
 
+	// カードデータがない場合は終了
     if (cardData == nullptr)
     {
-        player.ClearSelectedCard();
-
         ChangePhase(AIActionPhase::End);
         return;
     }
 
-    // 現段階ではUnitカードだけ使用する
+    // 現在はUnitカードだけ使用可能
     if (cardData->type != CardType::Unit)
     {
         player.ClearSelectedCard();
-
         ChangePhase(AIActionPhase::End);
         return;
     }
 
-    // 敵側から空いているマスを探す
-    for (int y = BattleConfig::BOARD_HEIGHT - 1; y >= 0; --y)
+    // -------------------------
+  // 敵陣の空いているマスを探す
+  // -------------------------
+
+    Board& board =
+        m_battleManager->GetBoard();
+
+    // Player2は下側から前進する想定なので、
+    // 後ろ側から順番に配置場所を探す
+    for (int y = BattleConfig::BOARD_HEIGHT - 1;
+        y >= 0;
+        --y)
     {
-        for (int x = 0; x < BattleConfig::BOARD_WIDTH; ++x)
+        for (int x = 0;
+            x < BattleConfig::BOARD_WIDTH;
+            ++x)
         {
             Cell* cell =
-                m_battleManager->GetBoard().GetCell(x, y);
+                board.GetCell(x, y);
 
             if (cell == nullptr)
             {
                 continue;
             }
 
-            // 空いているマスならカードを使用
-            if (!cell->HasUnit())
+            // すでにユニットがいる場所は使わない
+            if (cell->HasUnit())
             {
-                if (m_battleManager->UseSelectedCard(x, y))
-                {
-                    ChangePhase(AIActionPhase::SelectUnit);
-                    return;
-                }
+                continue;
+            }
+
+            // カード使用
+            if (m_battleManager->UseSelectedCard(x, y))
+            {
+                ChangePhase(AIActionPhase::SelectUnit);
+                return;
             }
         }
     }
 
-    // 手札がない場合はターン終了
-}
+    // 配置できる場所がなかった
+    player.ClearSelectedCard();
 
-// カード使用
-void AIController::UpdateUseCard()
-{
-    // ここで実際のカード使用処理を後ほど実装する
-    ChangePhase(AIActionPhase::SelectUnit);
+    ChangePhase(AIActionPhase::End);
 }
-
+   
 // ユニット選択
 void AIController::UpdateSelectUnit()
 {
-    // ここで行動可能なユニットを探す
-    ChangePhase(AIActionPhase::MoveUnit);
+    for (Unit* unit : m_battleManager->GetUnits())
+    {
+        if (unit == nullptr)
+            continue;
+
+        // 自分のユニット以外は無視
+        if (unit->GetOwner() != m_owner)
+            continue;
+
+        // すでに行動済みのユニットは無視
+        if (unit->HasActed())
+            continue;
+
+        // このユニットを選択
+        m_battleManager->SelectUnit(unit);
+
+        // 移動フェーズへ
+        ChangePhase(AIActionPhase::MoveUnit);
+        return;
+    }
+
+    // 行動できるユニットがいなかった
+    ChangePhase(AIActionPhase::End);
 }
 
 // ユニット移動
 void AIController::UpdateMoveUnit()
 {
-    // ここで移動先を決定する
+    // 選択中のユニットが存在するか確認
+    const std::vector<Unit*>& units =
+        m_battleManager->GetUnits();
+
+    Unit* selectedUnit = nullptr;
+
+    // AIが選択しているユニットを探す
+    for (Unit* unit : units)
+    {
+        if (unit == nullptr)
+        {
+            continue;
+        }
+
+        if (unit->IsSelected())
+        {
+            selectedUnit = unit;
+            break;
+        }
+    }
+
+    // ユニットが見つからない場合
+    if (selectedUnit == nullptr)
+    {
+        ChangePhase(AIActionPhase::DecideAttack);
+        return;
+    }
+
+    // ユニットのカードデータ取得
+    const CardData* cardData =
+        selectedUnit->GetCardData();
+
+    if (cardData == nullptr)
+    {
+        ChangePhase(AIActionPhase::DecideAttack);
+        return;
+    }
+
+    // 移動パターン取得
+    const std::vector<PatternOffset>& pattern =
+        PatternDatabase::GetPattern(
+            cardData->movePattern);
+
+    // 移動パターンがない場合
+    if (pattern.empty())
+    {
+        ChangePhase(AIActionPhase::DecideAttack);
+        return;
+    }
+
+    // 移動可能なマスを保存
+    std::vector<std::pair<int, int>> movableCells;
+
+
+    Board& board =
+        m_battleManager->GetBoard();
+
+    int currentX = selectedUnit->GetBoardX();
+    int currentY = selectedUnit->GetBoardY();
+
+    // 移動パターンを調べる
+    for (const PatternOffset& offset : pattern)
+    {
+        int offsetX = offset.x;
+        int offsetY = offset.y;
+
+        // Player2は前後方向を反転
+        if (selectedUnit->GetOwner() == UnitOwner::Player2)
+        {
+            offsetY = -offsetY;
+        }
+
+        int targetX = currentX + offsetX;
+        int targetY = currentY + offsetY;
+
+        // 盤面外なら無視
+        if (!board.IsInside(targetX, targetY))
+        {
+            continue;
+        }
+
+        Cell* targetCell =
+            board.GetCell(targetX, targetY);
+
+        if (targetCell == nullptr)
+        {
+            continue;
+        }
+
+        // すでにユニットがいる場所には移動しない
+        if (targetCell->HasUnit())
+        {
+            continue;
+        }
+
+        // 移動可能なマスとして登録
+        movableCells.push_back(
+            std::make_pair(targetX, targetY));
+    }
+
+    // 移動できる場所がない場合
+    if (movableCells.empty())
+    {
+        ChangePhase(AIActionPhase::DecideAttack);
+        return;
+    }
+
+    // 移動可能な場所からランダムに1つ選択
+    std::random_device rd;
+    std::mt19937 randomEngine(rd());
+
+    std::uniform_int_distribution<int> distribution(
+        0,
+        static_cast<int>(movableCells.size()) - 1);
+
+    int randomIndex =
+        distribution(randomEngine);
+
+    int targetX =
+        movableCells[randomIndex].first;
+
+    int targetY =
+        movableCells[randomIndex].second;
+
+    // 実際に移動
+    if (m_battleManager->MoveSelectedUnit(
+        targetX,
+        targetY))
+    {
+        // 移動成功
+        ChangePhase(AIActionPhase::DecideAttack);
+        return;
+    }
+
+    // 移動失敗
     ChangePhase(AIActionPhase::DecideAttack);
 }
 

@@ -136,9 +136,6 @@ void EnemyTurn::ChangePhase(TurnPhase phase)
 
 void EnemyTurn::UpdateStartPhase()
 {
-     // AIを開始
-    m_aiController.Start();
-
     ChangePhase(TurnPhase::Draw);
 }
 
