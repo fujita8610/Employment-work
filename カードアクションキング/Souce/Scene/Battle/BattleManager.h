@@ -70,6 +70,9 @@ public:
 	// 選択中のカードを使用する
     bool UseSelectedCard(int x, int y);
 
+    // 盤面上のユニット一覧を取得
+    const std::vector<Unit*>& GetUnits() const;
+
     // ユニット選択
     void SelectUnit(Unit* unit);
 

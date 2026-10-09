@@ -559,6 +559,12 @@ bool BattleManager::UseSelectedCard(int x, int y)
     return true;
 }
 
+// 盤面上のユニット一覧を取得
+const std::vector<Unit*>& BattleManager::GetUnits() const
+{
+    return m_units;
+}
+
 // ユニット選択
 void BattleManager::SelectUnit(Unit* unit)
 {

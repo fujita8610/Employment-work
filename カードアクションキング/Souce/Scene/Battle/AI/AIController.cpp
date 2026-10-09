@@ -19,9 +19,7 @@
 #include "../../../card/data/Pattern/PatternDatabase.h"
 
 //初期化
-bool AIController::Init(
-    BattleManager* battleManager,
-    UnitOwner owner)
+bool AIController::Init(BattleManager* battleManager,UnitOwner owner)
 {
     if (battleManager == nullptr)
     {
@@ -213,13 +211,9 @@ void AIController::UpdateUseCard()
 
     // Player2は下側から前進する想定なので、
     // 後ろ側から順番に配置場所を探す
-    for (int y = BattleConfig::BOARD_HEIGHT - 1;
-        y >= 0;
-        --y)
+    for (int y = BattleConfig::BOARD_HEIGHT - 1;y >= 0;--y)
     {
-        for (int x = 0;
-            x < BattleConfig::BOARD_WIDTH;
-            ++x)
+        for (int x = 0; x < BattleConfig::BOARD_WIDTH; ++x)
         {
             Cell* cell =
                 board.GetCell(x, y);
