@@ -108,8 +108,6 @@ private:
 
     // 手札描画
     HandRenderer m_handRenderer;
-    // カードモデルのハンドル
-    int m_cardModelHandle = -1;
 
     //盤面上のユニット
     std::vector<Unit*> m_units;
