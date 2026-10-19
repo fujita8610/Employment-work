@@ -16,24 +16,26 @@ public:
 
     // クリックされたカードのIndexを取得
    // クリックされていない場合は-1
-    int GetClickedCardIndex(
-        const Hand& hand,
-        int mouseX,
-        int mouseY) const;
+    int GetClickedCardIndex(const Hand& hand,int mouseX,int mouseY) const;
 
     // 終了処理
     void Release();
 
 private:
+    // 3Dカードモデル
+    int m_cardModelHandle = -1;
 
     // カードサイズ
+    // 3Dカードの仮配置設定
+    float m_cardWorldY = 40.0f;
+    float m_cardWorldZ = -300.0f;
+    float m_cardWorldSpacing = 120.0f;
+    float m_cardScale = 50.0f;
+
+    // 2D手札UIの設定
     int m_cardWidth = 120;
     int m_cardHeight = 180;
-
-    // カード間隔
     int m_cardSpacing = 20;
-
-    // 描画開始位置
     int m_startY = 780;
 
     // カードの描画開始X座標を計算

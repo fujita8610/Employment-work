@@ -11,14 +11,30 @@
 // 初期化
 bool HandRenderer::Init()
 {
+    // 3Dカードモデルを読み込む
+    m_cardModelHandle =
+        MV1LoadModel("Data\\3Dmodel\\cardmodel1.x");
+
+    if (m_cardModelHandle == -1)
+    {
+        OutputDebugStringA(
+            "HandRenderer : Card model load failed.\n");
+
+        return false;
+    }
+
+    // モデルの大きさを設定
+    MV1SetScale(
+        m_cardModelHandle,
+        VGet(m_cardScale, m_cardScale, m_cardScale));
+
     return true;
 }
 
 
 // 手札を描画
-void HandRenderer::Draw(
-    const Hand& hand,
-    int selectedIndex)
+
+void HandRenderer::Draw(const Hand& hand,int selectedIndex)
 {
     const size_t cardCount = hand.GetCount();
 
@@ -27,13 +43,40 @@ void HandRenderer::Draw(
         return;
     }
 
-    const int startX =
-        CalculateStartX(cardCount);
+    const int startX = CalculateStartX(cardCount);
 
+    // 3Dカードを手札の枚数分描画
+    if (m_cardModelHandle != -1)
+    {
+        for (size_t i = 0; i < cardCount; i++)
+        {
+            // 手札の中央を基準に左右へ配置
+            const float centerOffset =
+                (static_cast<float>(i) -
+                    (static_cast<float>(cardCount) - 1.0f) / 2.0f);
+
+            const float worldX = centerOffset * m_cardWorldSpacing;
+
+            // 選択中のカードは少し上へ移動
+            float worldY = m_cardWorldY;
+
+            if (selectedIndex == static_cast<int>(i))
+            {
+                worldY += 15.0f;
+            }
+
+            MV1SetPosition(
+                m_cardModelHandle,
+                VGet(worldX, worldY, m_cardWorldZ));
+
+            MV1DrawModel(m_cardModelHandle);
+        }
+    }
+
+    // 既存の2D手札UIを描画
     for (size_t i = 0; i < cardCount; i++)
     {
-        const CardInstance* card =
-            hand.GetCard(i);
+        const CardInstance* card = hand.GetCard(i);
 
         if (card == nullptr)
         {
@@ -41,11 +84,8 @@ void HandRenderer::Draw(
         }
 
         const int x =
-            startX +
-            static_cast<int>(i) *
-            (m_cardWidth + m_cardSpacing);
+            startX + static_cast<int>(i) * (m_cardWidth + m_cardSpacing);
 
-        // 選択中のカードだけ少し上に表示
         int y = m_startY;
 
         if (selectedIndex == static_cast<int>(i))
@@ -55,68 +95,57 @@ void HandRenderer::Draw(
 
         // カード背景
         DrawBox(
-            x,
-            y,
+            x, y,
             x + m_cardWidth,
             y + m_cardHeight,
             GetColor(60, 60, 80),
             TRUE);
 
-        // 枠の色
+        // 選択状態に応じて枠の色を変更
         const int borderColor =
             (selectedIndex == static_cast<int>(i))
             ? GetColor(255, 255, 0)
             : GetColor(255, 255, 255);
 
         DrawBox(
-            x,
-            y,
+            x, y,
             x + m_cardWidth,
             y + m_cardHeight,
             borderColor,
             FALSE);
 
-        //カードデータ取得
-        const CardData* data =
-            card->GetCardData();
+        const CardData* data = card->GetCardData();
 
         if (data == nullptr)
         {
             continue;
         }
 
-        //name
         DrawString(
-            x + 10,
-            y + 10,
+            x + 10, y + 10,
             data->name.c_str(),
             GetColor(255, 255, 255));
 
-        //cost
         DrawFormatString(
-            x + 10,
-            y + 45,
+            x + 10, y + 45,
             GetColor(255, 255, 0),
             "Cost : %d",
             data->cost);
 
-        //HP
         DrawFormatString(
-            x + 10,
-            y + 75,
+            x + 10, y + 75,
             GetColor(0, 255, 0),
             "HP : %d",
             data->hp);
 
-        //攻撃力
         DrawFormatString(
-            x + 10,
-            y + 105,
+            x + 10, y + 105,
             GetColor(255, 100, 100),
             "ATK : %d",
             data->attack);
     }
 }
+
 
 int HandRenderer::CalculateStartX(size_t cardCount) const
 {
@@ -179,5 +208,9 @@ int HandRenderer::GetClickedCardIndex(
 // 終了処理
 void HandRenderer::Release()
 {
-    // 今は解放するリソースなし
+    if (m_cardModelHandle != -1)
+    {
+        MV1DeleteModel(m_cardModelHandle);
+        m_cardModelHandle = -1;
+    }
 }

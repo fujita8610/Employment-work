@@ -34,6 +34,28 @@ bool BattleManager::Init()
         return false;
     }
 
+    //テスト
+    // カードモデル読み込みテスト
+    m_cardModelHandle =
+        MV1LoadModel("Data\\3Dmodel\\cardmodel1.x");
+
+    if (m_cardModelHandle == -1)
+    {
+        OutputDebugStringA(
+            "Card model load failed.\n");
+
+        return false;
+    }
+
+    // 仮の配置位置
+    MV1SetPosition(
+        m_cardModelHandle,
+        VGet(0.0f, 40.0f, -300.0f));
+    // 仮のサイズ：50倍
+    MV1SetScale(
+        m_cardModelHandle,
+        VGet(50.0f, 50.0f, 50.0f));
+
     //今後はデッキリストから選べるよう見する
     // 保存されたデッキを読み込む
     if (!m_player1.LoadDeck("Data\\Deck\\Player\\playersample1.txt"))
@@ -217,6 +239,12 @@ void BattleManager::Draw()
     //3D盤面
     m_renderer.Draw(m_board);
 
+    // カードモデル描画テスト
+    if (m_cardModelHandle != -1)
+    {
+        MV1DrawModel(m_cardModelHandle);
+    }
+
     // プレイヤーの手札
     m_handRenderer.Draw(GetCurrentPlayer().GetHand(), GetCurrentPlayer().GetSelectedCardIndex());
 
@@ -356,6 +384,13 @@ void BattleManager::Release()
 
     //Renderer
     m_handRenderer.Release();
+
+	// カードモデル解放
+    if (m_cardModelHandle != -1)
+    {
+        MV1DeleteModel(m_cardModelHandle);
+        m_cardModelHandle = -1;
+    }
 
     //選択中のユニット解除
     ClearSelectedUnit();
