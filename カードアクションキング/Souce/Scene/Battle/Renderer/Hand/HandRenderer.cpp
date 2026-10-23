@@ -24,9 +24,12 @@ bool HandRenderer::Init()
     }
 
     // モデルの大きさを設定
-    MV1SetScale(
-        m_cardModelHandle,
-        VGet(m_cardScale, m_cardScale, m_cardScale));
+    //x軸をマイナスにして左右を反転
+    MV1SetScale(m_cardModelHandle,VGet(m_cardScale, m_cardScale, m_cardScale));
+
+    // カードをY軸方向に180度回転
+    // カメラ側からカードの表面が見えるようにする
+    MV1SetRotationXYZ(m_cardModelHandle, VGet(0.0f, 0.0f, 0.0f));
 
     return true;
 }
@@ -45,35 +48,126 @@ void HandRenderer::Draw(const Hand& hand,int selectedIndex)
 
     const int startX = CalculateStartX(cardCount);
 
-    // 3Dカードを手札の枚数分描画
+    // 3Dカードを描画
     if (m_cardModelHandle != -1)
     {
         for (size_t i = 0; i < cardCount; i++)
         {
-            // 手札の中央を基準に左右へ配置
+            const CardInstance* card = hand.GetCard(i);
+
+            if (card == nullptr)
+            {
+                continue;
+            }
+
+            const CardData* data = card->GetCardData();
+
+            if (data == nullptr)
+            {
+                continue;
+            }
+
+            // カードのワールド座標を計算
             const float centerOffset =
-                (static_cast<float>(i) -
-                    (static_cast<float>(cardCount) - 1.0f) / 2.0f);
+                static_cast<float>(i) -
+                (static_cast<float>(cardCount) - 1.0f) / 2.0f;
 
-            const float worldX = centerOffset * m_cardWorldSpacing;
+            const float worldX =
+                centerOffset * m_cardWorldSpacing;
 
-            // 選択中のカードは少し上へ移動
             float worldY = m_cardWorldY;
 
+            // 選択中のカードを少し上へ
             if (selectedIndex == static_cast<int>(i))
             {
                 worldY += 15.0f;
             }
 
+            // モデルを配置
             MV1SetPosition(
                 m_cardModelHandle,
                 VGet(worldX, worldY, m_cardWorldZ));
 
+            // モデルを描画
             MV1DrawModel(m_cardModelHandle);
         }
     }
 
-    // 既存の2D手札UIを描画
+    // 3Dモデルの描画後に文字を重ねる
+    for (size_t i = 0; i < cardCount; i++)
+    {
+        const CardInstance* card = hand.GetCard(i);
+
+        if (card == nullptr)
+        {
+            continue;
+        }
+
+        const CardData* data = card->GetCardData();
+
+        if (data == nullptr)
+        {
+            continue;
+        }
+
+        // カードのワールド座標を再計算
+        const float centerOffset =
+            static_cast<float>(i) -
+            (static_cast<float>(cardCount) - 1.0f) / 2.0f;
+
+        const float worldX =
+            centerOffset * m_cardWorldSpacing;
+
+        float worldY = m_cardWorldY;
+
+        if (selectedIndex == static_cast<int>(i))
+        {
+            worldY += 15.0f;
+        }
+
+        // 文字を表示する基準点
+        // カード表面の位置に合わせて調整する
+        VECTOR screenPos = ConvWorldPosToScreenPos(
+            VGet(worldX, worldY + 15.0f, m_cardWorldZ));
+
+        // カメラの後方など、投影できない位置はスキップ
+        if (screenPos.z < 0.0f || screenPos.z > 1.0f)
+        {
+            continue;
+        }
+
+        const int textX = static_cast<int>(screenPos.x);
+        const int textY = static_cast<int>(screenPos.y);
+
+        // 名前
+        // カード名：上部の白い部分
+        DrawString(
+            textX - 35,
+            textY - 45,
+            data->name.c_str(),
+            GetColor(255, 255, 255));
+
+        // HP
+       // HP：右下の緑の部分
+        DrawFormatString(
+            textX + 5,
+            textY + 45,
+            GetColor(100, 255, 120),
+            "HP: %d",
+            data->hp);
+
+        // 攻撃力
+       // ATK：左下の赤い部分
+        DrawFormatString(
+            textX - 35,
+            textY + 45,
+            GetColor(255, 80, 60),
+            "ATK: %d",
+            data->attack);
+
+    }
+
+    // 既存の2D手札UI
     for (size_t i = 0; i < cardCount; i++)
     {
         const CardInstance* card = hand.GetCard(i);
@@ -84,7 +178,9 @@ void HandRenderer::Draw(const Hand& hand,int selectedIndex)
         }
 
         const int x =
-            startX + static_cast<int>(i) * (m_cardWidth + m_cardSpacing);
+            startX +
+            static_cast<int>(i) *
+            (m_cardWidth + m_cardSpacing);
 
         int y = m_startY;
 
@@ -93,7 +189,6 @@ void HandRenderer::Draw(const Hand& hand,int selectedIndex)
             y -= 30;
         }
 
-        // カード背景
         DrawBox(
             x, y,
             x + m_cardWidth,
@@ -101,7 +196,6 @@ void HandRenderer::Draw(const Hand& hand,int selectedIndex)
             GetColor(60, 60, 80),
             TRUE);
 
-        // 選択状態に応じて枠の色を変更
         const int borderColor =
             (selectedIndex == static_cast<int>(i))
             ? GetColor(255, 255, 0)
