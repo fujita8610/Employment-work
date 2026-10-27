@@ -13,7 +13,7 @@ bool HandRenderer::Init()
 {
     // 3Dカードモデルを読み込む
     m_cardModelHandle =
-        MV1LoadModel("Data\\3Dmodel\\cardmodel1.x");
+        MV1LoadModel("Data\\3Dmodel\\cardVol1.x");
 
     if (m_cardModelHandle == -1)
     {
@@ -29,7 +29,7 @@ bool HandRenderer::Init()
 
     // カードをY軸方向に180度回転
     // カメラ側からカードの表面が見えるようにする
-    MV1SetRotationXYZ(m_cardModelHandle, VGet(0.0f, 0.0f, 0.0f));
+    MV1SetRotationXYZ(m_cardModelHandle, VGet(0.0f, DX_PI_F*1.5, 0.0f));
 
     return true;
 }
