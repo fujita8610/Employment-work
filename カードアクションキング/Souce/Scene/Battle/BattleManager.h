@@ -24,8 +24,8 @@
 #include "../../Manager/Input/InputManager.h"
 
 //Renderer
-//Hand
 #include "Renderer/Hand/HandRenderer.h"
+#include "Renderer/Deck/DeckRenderer.h"
 
 //UI
 class Button;
@@ -108,6 +108,7 @@ private:
 
     // èD•`‰æ
     HandRenderer m_handRenderer;
+	DeckRenderer m_deckRenderer; // ƒfƒbƒL•`‰æ
 
     //”Õ–Êã‚Ìƒ†ƒjƒbƒg
     std::vector<Unit*> m_units;

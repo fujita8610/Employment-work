@@ -37,7 +37,8 @@ bool HandRenderer::Init()
 
 // 手札を描画
 
-void HandRenderer::Draw(const Hand& hand,int selectedIndex)
+
+void HandRenderer::Draw(const Hand& hand, int selectedIndex)
 {
     const size_t cardCount = hand.GetCount();
 
@@ -48,52 +49,16 @@ void HandRenderer::Draw(const Hand& hand,int selectedIndex)
 
     const int startX = CalculateStartX(cardCount);
 
-    // 3Dカードを描画
-    if (m_cardModelHandle != -1)
-    {
-        for (size_t i = 0; i < cardCount; i++)
-        {
-            const CardInstance* card = hand.GetCard(i);
+    // カラーパレット
+	//今後はBattleConfigにまとめる
+    const int darkNavy = GetColor(20, 24, 48);
+    const int cardBlue = GetColor(35, 42, 75);
+    const int gold = GetColor(220, 180, 90);
+    const int lightGold = GetColor(255, 225, 150);
+    const int white = GetColor(245, 240, 225);
+    const int green = GetColor(30, 150, 80);
+    const int red = GetColor(170, 55, 45);
 
-            if (card == nullptr)
-            {
-                continue;
-            }
-
-            const CardData* data = card->GetCardData();
-
-            if (data == nullptr)
-            {
-                continue;
-            }
-
-            // カードのワールド座標を計算
-            const float centerOffset =
-                static_cast<float>(i) -
-                (static_cast<float>(cardCount) - 1.0f) / 2.0f;
-
-            const float worldX =
-                centerOffset * m_cardWorldSpacing;
-
-            float worldY = m_cardWorldY;
-
-            // 選択中のカードを少し上へ
-            if (selectedIndex == static_cast<int>(i))
-            {
-                worldY += 15.0f;
-            }
-
-            // モデルを配置
-            MV1SetPosition(
-                m_cardModelHandle,
-                VGet(worldX, worldY, m_cardWorldZ));
-
-            // モデルを描画
-            MV1DrawModel(m_cardModelHandle);
-        }
-    }
-
-    // 3Dモデルの描画後に文字を重ねる
     for (size_t i = 0; i < cardCount; i++)
     {
         const CardInstance* card = hand.GetCard(i);
@@ -110,135 +75,152 @@ void HandRenderer::Draw(const Hand& hand,int selectedIndex)
             continue;
         }
 
-        // カードのワールド座標を再計算
-        const float centerOffset =
-            static_cast<float>(i) -
-            (static_cast<float>(cardCount) - 1.0f) / 2.0f;
-
-        const float worldX =
-            centerOffset * m_cardWorldSpacing;
-
-        float worldY = m_cardWorldY;
-
-        if (selectedIndex == static_cast<int>(i))
-        {
-            worldY += 15.0f;
-        }
-
-        // 文字を表示する基準点
-        // カード表面の位置に合わせて調整する
-        VECTOR screenPos = ConvWorldPosToScreenPos(
-            VGet(worldX, worldY + 15.0f, m_cardWorldZ));
-
-        // カメラの後方など、投影できない位置はスキップ
-        if (screenPos.z < 0.0f || screenPos.z > 1.0f)
-        {
-            continue;
-        }
-
-        const int textX = static_cast<int>(screenPos.x);
-        const int textY = static_cast<int>(screenPos.y);
-
-        // 名前
-        // カード名：上部の白い部分
-        DrawString(
-            textX - 35,
-            textY - 45,
-            data->name.c_str(),
-            GetColor(255, 255, 255));
-
-        // HP
-       // HP：右下の緑の部分
-        DrawFormatString(
-            textX + 5,
-            textY + 45,
-            GetColor(100, 255, 120),
-            "HP: %d",
-            data->hp);
-
-        // 攻撃力
-       // ATK：左下の赤い部分
-        DrawFormatString(
-            textX - 35,
-            textY + 45,
-            GetColor(255, 80, 60),
-            "ATK: %d",
-            data->attack);
-
-    }
-
-    // 既存の2D手札UI
-    for (size_t i = 0; i < cardCount; i++)
-    {
-        const CardInstance* card = hand.GetCard(i);
-
-        if (card == nullptr)
-        {
-            continue;
-        }
-
-        const int x =
-            startX +
-            static_cast<int>(i) *
-            (m_cardWidth + m_cardSpacing);
+        // カード座標
+        const int x = startX + static_cast<int>(i) * (m_cardWidth + m_cardSpacing);
 
         int y = m_startY;
 
-        if (selectedIndex == static_cast<int>(i))
+        const bool selected = selectedIndex == static_cast<int>(i);
+
+        // 選択中は少し上へ
+        if (selected)
         {
             y -= 30;
         }
 
+        const int right = x + m_cardWidth;
+        const int bottom = y + m_cardHeight;
+
+        // --------------------------------
+        // 1. 影
+        // --------------------------------
+
+        DrawBox(x + 5, y + 5,right + 5, bottom + 5,GetColor(0, 0, 0),TRUE);
+
+        // --------------------------------
+        // 2. カード本体
+        // --------------------------------
+
+        DrawBox(x, y,right, bottom,darkNavy,TRUE);
+
+        // 外側の金枠
+        DrawBox(x, y,right, bottom,gold,FALSE);
+
+        // 内側の枠
+        DrawBox(x + 4, y + 4,right - 4, bottom - 4,GetColor(110, 95, 65),FALSE);
+
+        // --------------------------------
+        // 3. カード背景
+        // --------------------------------
+
+        DrawBox(x + 7, y + 7,right - 7, bottom - 7,cardBlue,TRUE);
+
+        // 背景の内枠
+        DrawBox(x + 9, y + 9,right - 9, bottom - 9,GetColor(90, 105, 145),FALSE);
+
+        // --------------------------------
+        // 4. カード名プレート
+        // --------------------------------
+
+        DrawBox(x + 5, y + 7,right - 5, y + 32,GetColor(55, 45, 40),TRUE);
+
+        DrawBox(x + 5, y + 7,right - 5, y + 32,gold,FALSE);
+
+        DrawString(x + 9,y + 13,data->name.c_str(),white);
+
+        // --------------------------------
+        // 5. コストバッジ
+        // --------------------------------
+
+        DrawCircle(x + 15,y + 48,12,gold, TRUE);
+
+        DrawCircle(x + 15,y + 48,12,lightGold,FALSE);
+
+        DrawFormatString(x + 11,y + 41,white,"%d",data->cost);
+
+        // COST表記
+        DrawString(x + 32,y + 42,"COST",lightGold);
+
+        // --------------------------------
+        // 6. カード中央の装飾
+        // --------------------------------
+
+        DrawLine(x + 10, y + 67,right - 10, y + 67,gold);
+
+        // 中央の装飾マーク
+        DrawCircle(x + m_cardWidth / 2,y + 88,13,GetColor(100, 110, 145),FALSE);
+
+        DrawCircle(x + m_cardWidth / 2,y + 88,8,gold,FALSE);
+
+        // --------------------------------
+        // 7. HPプレート
+        // --------------------------------
+
+        const int statY = bottom - 47;
+
         DrawBox(
-            x, y,
-            x + m_cardWidth,
-            y + m_cardHeight,
-            GetColor(60, 60, 80),
+            x + 7, statY,
+            x + m_cardWidth / 2, bottom - 7,
+            GetColor(15, 65, 45),
             TRUE);
 
-        const int borderColor =
-            (selectedIndex == static_cast<int>(i))
-            ? GetColor(255, 255, 0)
-            : GetColor(255, 255, 255);
-
         DrawBox(
-            x, y,
-            x + m_cardWidth,
-            y + m_cardHeight,
-            borderColor,
+            x + 7, statY,
+            x + m_cardWidth / 2, bottom - 7,
+            green,
             FALSE);
 
-        const CardData* data = card->GetCardData();
-
-        if (data == nullptr)
-        {
-            continue;
-        }
-
-        DrawString(
-            x + 10, y + 10,
-            data->name.c_str(),
-            GetColor(255, 255, 255));
-
         DrawFormatString(
-            x + 10, y + 45,
-            GetColor(255, 255, 0),
-            "Cost : %d",
-            data->cost);
-
-        DrawFormatString(
-            x + 10, y + 75,
-            GetColor(0, 255, 0),
-            "HP : %d",
+            x + 12,
+            statY + 9,
+            GetColor(120, 255, 150),
+            "HP %d",
             data->hp);
 
+        // --------------------------------
+        // 8. ATKプレート
+        // --------------------------------
+
+        DrawBox(
+            x + m_cardWidth / 2, statY,
+            right - 7, bottom - 7,
+            GetColor(75, 25, 30),
+            TRUE);
+
+        DrawBox(
+            x + m_cardWidth / 2, statY,
+            right - 7, bottom - 7,
+            red,FALSE);
+
         DrawFormatString(
-            x + 10, y + 105,
-            GetColor(255, 100, 100),
-            "ATK : %d",
-            data->attack);
+            x + m_cardWidth / 2 + 5,
+            statY + 9,
+            GetColor(255, 130, 110),
+            "ATK %d", data->attack);
+
+        // --------------------------------
+        // 9. 選択中のカード装飾
+        // --------------------------------
+
+        if (selected)
+        {
+            // 金色の外枠
+            DrawBox(
+                x - 3, y - 3,
+                right + 3, bottom + 3,
+                lightGold,
+                FALSE);
+
+            // さらに内側の発光風装飾
+            DrawBox(
+                x - 1, y - 1,
+                right + 1, bottom + 1,
+                gold,
+                FALSE);
+        }
     }
 }
+
 
 
 int HandRenderer::CalculateStartX(size_t cardCount) const

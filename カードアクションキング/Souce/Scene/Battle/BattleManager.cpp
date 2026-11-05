@@ -217,6 +217,8 @@ void BattleManager::Draw()
     //3D盤面
     m_renderer.Draw(m_board);
 
+    // デッキ描画
+    m_deckRenderer.Draw(GetCurrentPlayer().GetDeck().GetCount());
     // プレイヤーの手札
     m_handRenderer.Draw(GetCurrentPlayer().GetHand(), GetCurrentPlayer().GetSelectedCardIndex());
 
