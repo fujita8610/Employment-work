@@ -36,8 +36,6 @@ bool HandRenderer::Init()
 
 
 // 手札を描画
-
-
 void HandRenderer::Draw(const Hand& hand, int selectedIndex)
 {
     const size_t cardCount = hand.GetCount();

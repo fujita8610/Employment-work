@@ -26,6 +26,7 @@
 //Renderer
 #include "Renderer/Hand/HandRenderer.h"
 #include "Renderer/Deck/DeckRenderer.h"
+#include "Renderer/CardDetail/CardDetailRenderer.h"
 
 //UI
 class Button;
@@ -109,6 +110,7 @@ private:
     // 手札描画
     HandRenderer m_handRenderer;
 	DeckRenderer m_deckRenderer; // デッキ描画
+	CardDetailRenderer m_cardDetailRenderer; // カード詳細描画
 
     //盤面上のユニット
     std::vector<Unit*> m_units;

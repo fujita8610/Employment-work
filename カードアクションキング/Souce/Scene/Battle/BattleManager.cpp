@@ -74,6 +74,11 @@ bool BattleManager::Init()
         return false;
     }
 
+    if (!m_cardDetailRenderer.Init())
+    {
+        return false;
+    }
+
     // ターン終了ボタン作成
     m_endTurnButton = new Button();
 
@@ -124,25 +129,20 @@ void BattleManager::Update()
 
         
        // 左クリックされた瞬間
-        if (InputManager::GetInstance().IsMouseDown(
-            MOUSE_INPUT_LEFT))
+        if (InputManager::GetInstance().IsMouseDown(MOUSE_INPUT_LEFT))
         {
-            BattlePlayer& currentPlayer =
-                GetCurrentPlayer();
+            BattlePlayer& currentPlayer = GetCurrentPlayer();
 
             // ① カードを選択中
             if (currentPlayer.GetSelectedCard() != nullptr)
             {
                 // 3D盤面上のセルを取得
-                Cell* cell =
-                    m_board.GetCellFromMouse();
+                Cell* cell = m_board.GetCellFromMouse();
 
                 if (cell != nullptr)
                 {
                     // カード使用
-                    UseSelectedCard(
-                        cell->GetX(),
-                        cell->GetY());
+                    UseSelectedCard(cell->GetX(),cell->GetY());
                 }
             }
 
@@ -150,15 +150,12 @@ void BattleManager::Update()
             else if (m_selectedUnit != nullptr)
             {
                 // 3D盤面上のセルを取得
-                Cell* cell =
-                    m_board.GetCellFromMouse();
+                Cell* cell = m_board.GetCellFromMouse();
 
                 if (cell != nullptr)
                 {
                     // 選択中ユニットを移動
-                    MoveSelectedUnit(
-                        cell->GetX(),
-                        cell->GetY());
+                    MoveSelectedUnit(cell->GetX(),cell->GetY());
                 }
             }
 
@@ -169,8 +166,7 @@ void BattleManager::Update()
                 Cell* cell =
                     m_board.GetCellFromMouse();
 
-                if (cell != nullptr &&
-                    cell->HasUnit())
+                if (cell != nullptr && cell->HasUnit())
                 {
                     // そのマスのユニットを取得
                     Unit* unit =
@@ -188,10 +184,10 @@ void BattleManager::Update()
                             mouseX,
                             mouseY);
 
+					// クリックされたカードがあれば選択
                     if (index >= 0)
                     {
-                        currentPlayer.SelectCard(
-                            static_cast<size_t>(index));
+                        currentPlayer.SelectCard(static_cast<size_t>(index));
                     }
                 }
             }
@@ -223,24 +219,28 @@ void BattleManager::Draw()
     m_handRenderer.Draw(GetCurrentPlayer().GetHand(), GetCurrentPlayer().GetSelectedCardIndex());
 
     //デッキ・手札のデバック
-    BattlePlayer& player =
-        GetCurrentPlayer();
+    BattlePlayer& player = GetCurrentPlayer();
 
-    DrawFormatString(
-        30,
-        130,
-        GetColor(0, 255, 255),
-        "DECK : %d",
-        static_cast<int>(
-            player.GetDeck().GetCount()));
+	// 選択中カード取得
+    const CardInstance* selectedCard = player.GetSelectedCard();
 
-    DrawFormatString(
-        30,
-        160,
-        GetColor(0, 255, 255),
-        "HAND : %d",
-        static_cast<int>(
-            player.GetHand().GetCount()));
+    if (selectedCard != nullptr)
+    {
+		// カード詳細描画
+        m_cardDetailRenderer.Draw(selectedCard->GetCardData());
+    }
+    else
+    {
+		// 選択中カードがない場合は詳細描画をクリア
+        m_cardDetailRenderer.Draw(nullptr);
+    }
+
+	//デッキ・手札の枚数を表示
+    DrawFormatString(30,130,GetColor(0, 255, 255),
+        "DECK : %d",static_cast<int>(player.GetDeck().GetCount()));
+
+    DrawFormatString(30,160,GetColor(0, 255, 255),
+        "HAND : %d",static_cast<int>(player.GetHand().GetCount()));
 
     // ターンデバッグ表示
     const TurnManager& turnManager = m_turnManager;
@@ -256,24 +256,13 @@ void BattleManager::Draw()
         turnText = "PLAYER２ TURN";
     }
 
-    DrawString(
-        30,
-        30,
-        turnText,
-        GetColor(255, 255, 255));
+    DrawString(30,30, turnText, GetColor(255, 255, 255));
 
-    DrawFormatString(
-        30,
-        60,
-        GetColor(255, 255, 255),
-        "TURN : %d",
-        turnManager.GetTurnCount());
+    DrawFormatString(30,60,GetColor(255, 255, 255),"TURN : %d",turnManager.GetTurnCount());
 
 	// 操作方式デバッグ表示
     const char* controllerText = "NONE";
-    switch (
-        turnManager.GetControllerType(
-            turnManager.GetCurrentTurn()))
+    switch (turnManager.GetControllerType(turnManager.GetCurrentTurn()))
     {
     case ControllerType::Human:
 
@@ -299,38 +288,28 @@ void BattleManager::Draw()
     case ControllerType::None:
 
     default:
-
         controllerText = "NONE";
 
         break;
     }
 
-
-    DrawFormatString(
-        30,
-        90,
-        GetColor(255, 255, 0),
-        "CONTROLLER : %s",
-        controllerText);
+	// 操作方式表示
+    DrawFormatString(30,90,GetColor(255, 255, 0),
+        "CONTROLLER : %s",controllerText);
 
     // 選択中ユニットのデバッグ表示
     if (m_selectedUnit != nullptr)
     {
-        DrawFormatString(
-            30,
-            190,
-            GetColor(255, 220, 0),
+		// 選択中ユニットの座標表示
+        DrawFormatString(30,190,GetColor(255, 220, 0),
             "SELECTED UNIT : (%d, %d)",
             m_selectedUnit->GetBoardX(),
             m_selectedUnit->GetBoardY());
     }
     else
     {
-        DrawString(
-            30,
-            190,
-            "SELECTED UNIT : NONE",
-            GetColor(255, 255, 255));
+        DrawString(30,190,
+            "SELECTED UNIT : NONE",GetColor(255, 255, 255));
     }
 
     DrawFormatString(
@@ -358,6 +337,7 @@ void BattleManager::Release()
 
     //Renderer
     m_handRenderer.Release();
+	m_cardDetailRenderer.Release(); // カード詳細描画終了
 
     //選択中のユニット解除
     ClearSelectedUnit();
@@ -398,10 +378,7 @@ void BattleManager::EndCurrentTurn()
 
 // ユニット生成
 Unit* BattleManager::CreateUnit(
-    const CardData* card,
-    UnitOwner owner,
-    int x,
-    int y)
+    const CardData* card,UnitOwner owner,int x,int y)
 {
     if (card == nullptr)
     {
@@ -482,12 +459,10 @@ BattlePlayer& BattleManager::GetCurrentPlayer()
 bool BattleManager::UseSelectedCard(int x, int y)
 {
 	// 現在のターンのプレイヤー取得
-    BattlePlayer& player =
-        GetCurrentPlayer();
+    BattlePlayer& player = GetCurrentPlayer();
 
     // 選択中カードを取得
-    const CardInstance* selectedCard =
-        player.GetSelectedCard();
+    const CardInstance* selectedCard = player.GetSelectedCard();
 
     if (selectedCard == nullptr)
     {
@@ -495,8 +470,7 @@ bool BattleManager::UseSelectedCard(int x, int y)
     }
 
     // カードデータ取得
-    const CardData* cardData =
-        selectedCard->GetCardData();
+    const CardData* cardData = selectedCard->GetCardData();
 
     if (cardData == nullptr)
     {
@@ -510,8 +484,7 @@ bool BattleManager::UseSelectedCard(int x, int y)
     }
 
     // 配置先セル取得
-    Cell* cell =
-        m_board.GetCell(x, y);
+    Cell* cell = m_board.GetCell(x, y);
 
     if (cell == nullptr)
     {
@@ -525,12 +498,7 @@ bool BattleManager::UseSelectedCard(int x, int y)
     }
 
     // ユニット生成
-    Unit* unit =
-        CreateUnit(
-            cardData,
-            player.GetOwner(),
-            x,
-            y);
+    Unit* unit = CreateUnit(cardData,player.GetOwner(),x,y);
 
     if (unit == nullptr)
     {
@@ -538,17 +506,16 @@ bool BattleManager::UseSelectedCard(int x, int y)
     }
 
     // 使用したカードを手札から削除
-    int selectedIndex =
-        player.GetSelectedCardIndex();
+    int selectedIndex = player.GetSelectedCardIndex();
 
     if (selectedIndex < 0)
     {
         return false;
     }
 
+	// 選択中カードを手札から削除し、所有権を取得
     std::unique_ptr<CardInstance> usedCard =
-        player.GetHand().RemoveCard(
-            static_cast<size_t>(selectedIndex));
+        player.GetHand().RemoveCard(static_cast<size_t>(selectedIndex));
 
     if (usedCard == nullptr)
     {

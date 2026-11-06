@@ -36,7 +36,7 @@ private:
     int m_cardWidth = 120;
     int m_cardHeight = 180;
     int m_cardSpacing = 20;
-    int m_startY = 780;
+    int m_startY = 700;  //手札の高さ
 
     // カードの描画開始X座標を計算
     int CalculateStartX(size_t cardCount) const;
