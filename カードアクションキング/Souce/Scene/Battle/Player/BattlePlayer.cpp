@@ -159,6 +159,22 @@ int BattlePlayer::DrawCards(int count)
     return drawCount;
 }
 
+// アニメーション用にカードを1枚引く
+std::unique_ptr<CardInstance> BattlePlayer::DrawCardForAnimation()
+{
+    return m_deck.DrawCard();
+}
+
+
+// ドローアニメーション終了後に手札へ追加
+void BattlePlayer::AddDrawnCard(std::unique_ptr<CardInstance> card)
+{
+    //
+    if (card == nullptr)
+    {return;}
+
+    m_hand.AddCard(std::move(card));
+}
 
 // 所有者を取得
 UnitOwner BattlePlayer::GetOwner() const

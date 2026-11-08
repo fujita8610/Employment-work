@@ -58,6 +58,12 @@ public:
     // カードを指定枚数引く
     int DrawCards(int count);
 
+    // アニメーション用にカードを1枚引く
+    std::unique_ptr<CardInstance> DrawCardForAnimation();
+
+    // ドローアニメーション終了後に手札へ追加
+    void AddDrawnCard(std::unique_ptr<CardInstance> card);
+
 
     // -------------------------
     // プレイヤー情報

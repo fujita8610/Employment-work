@@ -703,4 +703,4 @@ void BattleManager::ResetUnitActions(UnitOwner owner)
             unit->SetActed(false);
         }
     }
-}
+}                       
