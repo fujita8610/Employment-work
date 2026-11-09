@@ -2,23 +2,22 @@
 
 #include "DxLib.h"
 
-//インスタンス
-#include "../../../../card/Instance/CardInstance.h"
+//カード関連
+#include "../../../../card/Instance/CardInstance.h"  //カードインスタンス
+#include "../../../../card/Hand/Hand.h"   //手札
 
-//手札
-#include "../../../../card/Hand/Hand.h"
+
+#include "../../BattleConfig.h"  //BattleConfig
 
 // 初期化
 bool HandRenderer::Init()
 {
     // 3Dカードモデルを読み込む
-    m_cardModelHandle =
-        MV1LoadModel("Data\\3Dmodel\\cardVol1.x");
+    m_cardModelHandle = MV1LoadModel("Data\\3Dmodel\\cardVol1.x");
 
     if (m_cardModelHandle == -1)
     {
-        OutputDebugStringA(
-            "HandRenderer : Card model load failed.\n");
+        OutputDebugStringA("HandRenderer : Card model load failed.\n");
 
         return false;
     }
@@ -156,43 +155,23 @@ void HandRenderer::Draw(const Hand& hand, int selectedIndex)
 
         const int statY = bottom - 47;
 
-        DrawBox(
-            x + 7, statY,
-            x + m_cardWidth / 2, bottom - 7,
-            GetColor(15, 65, 45),
-            TRUE);
+        DrawBox(x + 7, statY, x + m_cardWidth / 2, bottom - 7, GetColor(15, 65, 45), TRUE);
 
-        DrawBox(
-            x + 7, statY,
-            x + m_cardWidth / 2, bottom - 7,
-            green,
-            FALSE);
+        DrawBox(x + 7, statY, x + m_cardWidth / 2, bottom - 7, green, FALSE);
 
-        DrawFormatString(
-            x + 12,
-            statY + 9,
-            GetColor(120, 255, 150),
-            "HP %d",
-            data->hp);
+        DrawFormatString(x + 12,statY + 9,GetColor(120, 255, 150),
+            "HP %d", data->hp);
 
         // --------------------------------
         // 8. ATKプレート
         // --------------------------------
 
-        DrawBox(
-            x + m_cardWidth / 2, statY,
-            right - 7, bottom - 7,
-            GetColor(75, 25, 30),
-            TRUE);
+        DrawBox(x + m_cardWidth / 2, statY, right - 7, bottom - 7,
+            GetColor(75, 25, 30),TRUE);
 
-        DrawBox(
-            x + m_cardWidth / 2, statY,
-            right - 7, bottom - 7,
-            red,FALSE);
+        DrawBox(x + m_cardWidth / 2, statY, right - 7, bottom - 7, red,FALSE);
 
-        DrawFormatString(
-            x + m_cardWidth / 2 + 5,
-            statY + 9,
+        DrawFormatString(x + m_cardWidth / 2 + 5,statY + 9,
             GetColor(255, 130, 110),
             "ATK %d", data->attack);
 
@@ -203,18 +182,11 @@ void HandRenderer::Draw(const Hand& hand, int selectedIndex)
         if (selected)
         {
             // 金色の外枠
-            DrawBox(
-                x - 3, y - 3,
-                right + 3, bottom + 3,
-                lightGold,
+            DrawBox(x - 3, y - 3, right + 3, bottom + 3, lightGold, 
                 FALSE);
 
             // さらに内側の発光風装飾
-            DrawBox(
-                x - 1, y - 1,
-                right + 1, bottom + 1,
-                gold,
-                FALSE);
+            DrawBox(x - 1, y - 1,right + 1, bottom + 1,gold,FALSE);
         }
     }
 }
@@ -242,10 +214,7 @@ int HandRenderer::CalculateStartX(size_t cardCount) const
 }
 
 //クリック判定
-int HandRenderer::GetClickedCardIndex(
-    const Hand& hand,
-    int mouseX,
-    int mouseY) const
+int HandRenderer::GetClickedCardIndex(const Hand& hand,int mouseX,int mouseY) const
 {
     const size_t cardCount = hand.GetCount();
 
@@ -254,15 +223,11 @@ int HandRenderer::GetClickedCardIndex(
         return -1;
     }
 
-    const int startX =
-        CalculateStartX(cardCount);
+    const int startX = CalculateStartX(cardCount);
 
     for (size_t i = 0; i < cardCount; i++)
     {
-        const int x =
-            startX +
-            static_cast<int>(i) *
-            (m_cardWidth + m_cardSpacing);
+        const int x = startX + static_cast<int>(i) * (m_cardWidth + m_cardSpacing);
 
         const int y = m_startY;
 

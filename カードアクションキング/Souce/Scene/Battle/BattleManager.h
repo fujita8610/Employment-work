@@ -20,8 +20,9 @@
 #include "Player/BattlePlayer.h"
 
 //各マネージャー
-#include "Turn/TurnManager.h"
-#include "../../Manager/Input/InputManager.h"
+#include "Turn/TurnManager.h"       //ターン
+#include "../../Manager/Input/InputManager.h"    //インプット
+#include "Animation/AnimationManager.h" //アニメーション
 
 //Renderer
 #include "Renderer/Hand/HandRenderer.h"
@@ -44,11 +45,7 @@ public:
     void Release();
 
     // ユニット生成
-    Unit* CreateUnit(
-        const CardData* card,
-        UnitOwner owner,
-        int x,
-        int y);
+    Unit* CreateUnit(const CardData* card,UnitOwner owner,int x,int y);
 
     // ボード取得
     Board& GetBoard();
@@ -102,8 +99,8 @@ private:
     //盤面
     Board m_board;
 
-    //ターン管理
-    TurnManager m_turnManager;
+    TurnManager m_turnManager;   //ターン管理
+    AnimationManager m_animationManager; // アニメーション管理
 
     //描画
 

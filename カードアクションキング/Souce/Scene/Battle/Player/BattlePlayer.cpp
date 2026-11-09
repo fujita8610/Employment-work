@@ -38,39 +38,29 @@ void BattlePlayer::Release()
 bool BattlePlayer::BuildDeck(
     const std::vector<int>& cardIDs)
 {
-    return DeckBuilder::BuildDeck(
-        cardIDs,
-        m_deck);
+    return DeckBuilder::BuildDeck(cardIDs, m_deck);
 }
 
 // デッキ保存
-bool BattlePlayer::SaveDeck(
-    const std::string& filePath)
+bool BattlePlayer::SaveDeck(const std::string& filePath)
 {
-    DeckData data =
-        m_deck.CreateDeckData();
+    DeckData data = m_deck.CreateDeckData();
 
-    return DeckSaveManager::SaveDeck(
-        data,
-        filePath);
+    return DeckSaveManager::SaveDeck(data,filePath);
 }
 
 // デッキ読み込み
-bool BattlePlayer::LoadDeck(
-    const std::string& filePath)
+bool BattlePlayer::LoadDeck(const std::string& filePath)
 {
     DeckData data;
 
-    if (!DeckSaveManager::LoadDeck(
-        data,
-        filePath))
+    if (!DeckSaveManager::LoadDeck(data,filePath))
     {
         return false;
     }
 
-    return DeckBuilder::BuildDeck(
-        data.cardIDs,
-        m_deck);
+    //
+    return DeckBuilder::BuildDeck(data.cardIDs,m_deck);
 }
 
 // カードを選択

@@ -52,8 +52,7 @@ bool BattleManager::Init()
 
     //今後はデッキリストから選べるよう見する
   // 保存されたデッキを読み込む
-    if (!m_player2.LoadDeck(
-        "Data\\Deck\\Enemy\\enemysample1.txt"))
+    if (!m_player2.LoadDeck("Data\\Deck\\Enemy\\enemysample1.txt"))
     {
         return false;
     }
@@ -65,6 +64,13 @@ bool BattleManager::Init()
     // ターンマネージャー初期化
     if (!m_turnManager.Init(this))
     {
+        return false;
+    }
+
+    // アニメーション管理初期化
+    if (!m_animationManager.Init())
+    {
+        OutputDebugStringA("BattleManager : AnimationManager Init Failed.\n");
         return false;
     }
 
@@ -114,8 +120,8 @@ void BattleManager::Update()
     //カメラ更新
     m_camera.Update();
 
-    //ターン更新
-    m_turnManager.Update();
+    m_turnManager.Update();     //ターン更新
+    m_animationManager.Update(1.0f / 60.0f); // アニメーション更新
 
     //手札クリック処理
 
@@ -131,6 +137,7 @@ void BattleManager::Update()
        // 左クリックされた瞬間
         if (InputManager::GetInstance().IsMouseDown(MOUSE_INPUT_LEFT))
         {
+            OutputDebugStringA("Mouse Click Detected\n"); //log
             BattlePlayer& currentPlayer = GetCurrentPlayer();
 
             // ① カードを選択中
@@ -162,9 +169,10 @@ void BattleManager::Update()
             // ③ 何も選択していない
             else
             {
+                OutputDebugStringA("Nothing Selected\n");
+
                 // まず盤面をクリックしたか確認
-                Cell* cell =
-                    m_board.GetCellFromMouse();
+                Cell* cell = m_board.GetCellFromMouse();
 
                 if (cell != nullptr && cell->HasUnit())
                 {
@@ -327,13 +335,20 @@ void BattleManager::Draw()
         InputManager::GetInstance().IsMouseDown(MOUSE_INPUT_LEFT)
         ? "DOWN"
         : "NONE");
+
+    DrawFormatString(
+        30,
+        220,
+        GetColor(255, 255, 0),
+        "HUMAN TURN : %s",
+        m_turnManager.IsHumanTurn() ? "TRUE" : "FALSE");
 }
 
 // 終了処理
 void BattleManager::Release()
 {
-    // ターンマネージャー終了
-    m_turnManager.Release();
+    m_turnManager.Release();          // ターンマネージャー終了
+    m_animationManager.Release();     // アニメーション終了処理
 
     //Renderer
     m_handRenderer.Release();
@@ -565,7 +580,6 @@ void BattleManager::SelectUnit(Unit* unit)
 
     // 新しいユニットを選択
     m_selectedUnit = unit;
-
     m_selectedUnit->SetSelected(true);
 }
 

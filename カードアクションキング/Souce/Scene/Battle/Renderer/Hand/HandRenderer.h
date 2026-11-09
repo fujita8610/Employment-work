@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 
 class Hand;
 
@@ -13,10 +14,14 @@ public:
     // 手札を描画
     void Draw(const Hand& hand,int selectedIndex);
 
-
     // クリックされたカードのIndexを取得
    // クリックされていない場合は-1
     int GetClickedCardIndex(const Hand& hand,int mouseX,int mouseY) const;
+
+    //アニメーション
+    void SetDrawAnimationPosition(float x, float y);  // ドロー描画位置設定
+    void SetDrawAnimationVisible(bool visible);     // ドローアニメーション表示設定
+    void DrawDrawAnimation() const;     // ドローアニメーション描画
 
     // 終了処理
     void Release();
@@ -37,6 +42,19 @@ private:
     int m_cardHeight = 180;
     int m_cardSpacing = 20;
     int m_startY = 700;  //手札の高さ
+
+    ///
+    //アニメーション
+    ////////////
+
+    // ドローアニメーションの描画位置
+    float m_drawAnimationX = 0.0f;
+    float m_drawAnimationY = 0.0f;
+
+    // アニメーション描画中か
+    bool m_showDrawAnimation = false;
+
+
 
     // カードの描画開始X座標を計算
     int CalculateStartX(size_t cardCount) const;

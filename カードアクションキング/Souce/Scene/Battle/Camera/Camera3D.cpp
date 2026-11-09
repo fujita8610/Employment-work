@@ -24,10 +24,7 @@ void Camera3D::Update()
 
 void Camera3D::Apply()
 {
-    SetCameraPositionAndTargetAndUpVec(
-        m_position,
-        m_target,
-        m_up);
+    SetCameraPositionAndTargetAndUpVec(m_position,m_target,m_up);
 }
 
 void Camera3D::Release()

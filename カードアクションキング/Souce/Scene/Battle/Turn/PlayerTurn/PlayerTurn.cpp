@@ -119,8 +119,7 @@ void PlayerTurn::ChangePhase(TurnPhase phase)
 void PlayerTurn::UpdateStartPhase()
 {
     // 現在のプレイヤーを取得
-    BattlePlayer& player =
-        m_battleManager->GetCurrentPlayer();
+    BattlePlayer& player = m_battleManager->GetCurrentPlayer();
 
     // 自分のユニットを再び行動可能にする
     m_battleManager->ResetUnitActions(player.GetOwner());
@@ -148,8 +147,7 @@ void PlayerTurn::UpdateDrawPhase()
     }
 
     // BattleManagerからプレイヤーを取得
-    BattlePlayer& player =
-        m_battleManager->GetCurrentPlayer();
+    BattlePlayer& player = m_battleManager->GetCurrentPlayer();
 
     // 1枚ドロー
     player.DrawCards(1);

@@ -1,7 +1,5 @@
 #include "AnimationManager.h"
 
-#include "AnimationBase.h"
-
 #include <algorithm>
 
 // 初期化
