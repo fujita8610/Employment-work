@@ -191,8 +191,6 @@ void HandRenderer::Draw(const Hand& hand, int selectedIndex)
     }
 }
 
-
-
 int HandRenderer::CalculateStartX(size_t cardCount) const
 {
     if (cardCount == 0)
@@ -252,4 +250,48 @@ void HandRenderer::Release()
         MV1DeleteModel(m_cardModelHandle);
         m_cardModelHandle = -1;
     }
+}
+
+// ドローアニメーションの位置設定
+void HandRenderer::SetDrawAnimationPosition(float x, float y)
+{
+    m_drawAnimationX = x;
+    m_drawAnimationY = y;
+}
+
+// ドローアニメーションの表示設定
+void HandRenderer::SetDrawAnimationVisible(bool visible)
+{
+    m_showDrawAnimation = visible;
+}
+
+// ドローアニメーション描画
+void HandRenderer::DrawDrawAnimation() const
+{
+    if (!m_showDrawAnimation)
+    {
+        return;
+    }
+
+    const int halfWidth = m_cardWidth / 2;
+    const int halfHeight = m_cardHeight / 2;
+
+    const int x = static_cast<int>(m_drawAnimationX);
+    const int y = static_cast<int>(m_drawAnimationY);
+
+    const int darkNavy = GetColor(20, 24, 48);
+    const int gold = GetColor(220, 180, 90);
+    const int lightGold = GetColor(255, 225, 150);
+
+    // カード本体
+    DrawBox(x - halfWidth,y - halfHeight,x + halfWidth,y + halfHeight,darkNavy,TRUE);
+
+    // 外枠
+    DrawBox(x - halfWidth,y - halfHeight,x + halfWidth,y + halfHeight,gold,FALSE);
+
+    // 内側の装飾
+    DrawBox(x - halfWidth + 8,y - halfHeight + 8,x + halfWidth - 8,y + halfHeight - 8,lightGold,FALSE);
+
+    // 中央の模様
+    DrawCircle(x, y, 25, gold, FALSE);
 }

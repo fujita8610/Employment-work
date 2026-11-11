@@ -4,6 +4,7 @@
 #include <string>
 
 //バトル関連
+#include "BattleConfig.h"
 #include "Board/Board.h"
 #include "board/Renderer/BoardRenderer.h"
 #include "Board/Unit/Unit.h"
@@ -47,11 +48,9 @@ public:
     // ユニット生成
     Unit* CreateUnit(const CardData* card,UnitOwner owner,int x,int y);
 
-    // ボード取得
-    Board& GetBoard();
+    Board& GetBoard();    // ボード取得
 
-    //ターンマネージャーの取得
-    TurnManager& GetTurnManager();
+    TurnManager& GetTurnManager();    //ターンマネージャーの取得
 
     // Player1取得
     BattlePlayer& GetPlayer1();
@@ -59,29 +58,34 @@ public:
     // Player2取得
     BattlePlayer& GetPlayer2();
 
-	// 現在のターンのプレイヤー取得
-    BattlePlayer& GetCurrentPlayer();
+    BattlePlayer& GetCurrentPlayer();	// 現在のターンのプレイヤー取得
 
-    // 現在のターンを終了
-    void EndCurrentTurn();
+    void EndCurrentTurn();    // 現在のターンを終了
 
-	// 選択中のカードを使用する
-    bool UseSelectedCard(int x, int y);
+    bool UseSelectedCard(int x, int y);	// 選択中のカードを使用する
 
-    // 盤面上のユニット一覧を取得
-    const std::vector<Unit*>& GetUnits() const;
+    /// <summary>
+    /// ユニット
+    /// </summary>
 
-    // ユニット選択
-    void SelectUnit(Unit* unit);
+    const std::vector<Unit*>& GetUnits() const;    // 盤面上のユニット一覧を取得
 
-    // ユニット選択解除
-    void ClearSelectedUnit();
+    void SelectUnit(Unit* unit);    // ユニット選択
 
-    // ユニット移動
-    bool MoveSelectedUnit(int x, int y);
+    void ClearSelectedUnit();    // ユニット選択解除
+
+    bool MoveSelectedUnit(int x, int y);    // ユニット移動
 
     // ターン開始時にユニットの行動状態をリセット
     void ResetUnitActions(UnitOwner owner);
+
+
+/// <summary>
+/// アニメーション
+/// </summary>
+
+    void StartCardDrawAnimation();  // ドローアニメーション開始
+
 
 private:
 

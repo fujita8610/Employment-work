@@ -1,11 +1,17 @@
 #include "DxLib.h"
 #include "BattleManager.h"
 
-#include <cstdlib>
+#include <memory>
+#include <cstdlib>  // std::rand
 
+//UI
 #include "../../UI/UIManager.h"
 #include "../../UI/Button/Button.h"
+
 #include "../../card/data/Pattern/PatternDatabase.h"
+
+//アニメーション
+#include "Animation/AnimationDeck/carddraw/CardDrawAnimation.h" // ドローアニメーション
 
 // 初期化
 bool BattleManager::Init()
@@ -218,16 +224,15 @@ void BattleManager::Update()
 // 描画
 void BattleManager::Draw()
 {
-    //3D盤面
-    m_renderer.Draw(m_board);
+    m_renderer.Draw(m_board);   //3D盤面
 
     // デッキ描画
     m_deckRenderer.Draw(GetCurrentPlayer().GetDeck().GetCount());
     // プレイヤーの手札
     m_handRenderer.Draw(GetCurrentPlayer().GetHand(), GetCurrentPlayer().GetSelectedCardIndex());
+    m_handRenderer.DrawDrawAnimation();    // ドローアニメーション描画
 
-    //デッキ・手札のデバック
-    BattlePlayer& player = GetCurrentPlayer();
+    BattlePlayer& player = GetCurrentPlayer();    //デッキ・手札のデバック
 
 	// 選択中カード取得
     const CardInstance* selectedCard = player.GetSelectedCard();
@@ -250,8 +255,7 @@ void BattleManager::Draw()
     DrawFormatString(30,160,GetColor(0, 255, 255),
         "HAND : %d",static_cast<int>(player.GetHand().GetCount()));
 
-    // ターンデバッグ表示
-    const TurnManager& turnManager = m_turnManager;
+    const TurnManager& turnManager = m_turnManager;    // ターンデバッグ表示
 
     const char* turnText = "NONE";
 
@@ -354,18 +358,15 @@ void BattleManager::Release()
     m_handRenderer.Release();
 	m_cardDetailRenderer.Release(); // カード詳細描画終了
 
-    //選択中のユニット解除
-    ClearSelectedUnit();
+    ClearSelectedUnit();    //選択中のユニット解除
 
     // プレイヤー終了
     m_player1.Release();
     m_player2.Release();
 
-    // 盤面描画終了
-    m_renderer.Release();
+    m_renderer.Release();    // 盤面描画終了
 
-    // カメラ終了
-    m_camera.Release();
+    m_camera.Release();    // カメラ終了
 
     // ユニット解放
     for (Unit* unit : m_units)
@@ -381,19 +382,15 @@ void BattleManager::Release()
 // 現在のターンを終了
 void BattleManager::EndCurrentTurn()
 {
-    // 選択中のユニットを解除
-    ClearSelectedUnit();
+    ClearSelectedUnit();   // 選択中のユニットを解除
 
-    // 現在のプレイヤーのカード選択を解除
-    GetCurrentPlayer().ClearSelectedCard();
+    GetCurrentPlayer().ClearSelectedCard();    // 現在のプレイヤーのカード選択を解除
 
-    // ターンマネージャーにターン終了を通知
-    m_turnManager.EndCurrentTurn();
+    m_turnManager.EndCurrentTurn();    // ターンマネージャーにターン終了を通知
 }
 
 // ユニット生成
-Unit* BattleManager::CreateUnit(
-    const CardData* card,UnitOwner owner,int x,int y)
+Unit* BattleManager::CreateUnit(const CardData* card,UnitOwner owner,int x,int y)
 {
     if (card == nullptr)
     {
@@ -537,8 +534,7 @@ bool BattleManager::UseSelectedCard(int x, int y)
         return false;
     }
 
-    // カード選択解除
-    player.ClearSelectedCard();
+    player.ClearSelectedCard();    // カード選択解除
 
     return true;
 }
@@ -558,8 +554,7 @@ void BattleManager::SelectUnit(Unit* unit)
         return;
     }
 
-    // 自分のユニット以外は選択できない
-    BattlePlayer& player = GetCurrentPlayer();
+    BattlePlayer& player = GetCurrentPlayer();  // 自分のユニット以外は選択できない
 
     if (unit->GetOwner() != player.GetOwner())
     {
@@ -620,8 +615,7 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
     // CSVから読み込んだ移動パターンを確認
     OutputDebugStringA("===== Move Debug =====\n");
 
-    OutputDebugStringA(
-        ("Unit : " + cardData->name + "\n").c_str());
+    OutputDebugStringA(("Unit : " + cardData->name + "\n").c_str());
 
     OutputDebugStringA(
         ("MovePattern : " +
@@ -635,8 +629,7 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
 
 
     // カードに設定されている移動パターンを取得
-    const std::vector<PatternOffset>& pattern
-        = PatternDatabase::GetPattern(cardData->movePattern);
+    const std::vector<PatternOffset>& pattern = PatternDatabase::GetPattern(cardData->movePattern);
 
     // パターンが空か確認
     if (pattern.empty())
@@ -667,8 +660,6 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
         OutputDebugStringA(
             ("Pattern Target : (" + std::to_string(targetX) +", " + std::to_string(targetY) +")\n").c_str());
 
-  
-
         if (targetX == x && targetY == y)
         {
             canMove = true;
@@ -690,11 +681,9 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
         return false;
     }
 
-    // 行動済みにする
-    m_selectedUnit->SetActed(true);
+    m_selectedUnit->SetActed(true);    // 行動済みにする
 
-    // 選択解除
-    ClearSelectedUnit();
+    ClearSelectedUnit();    // 選択解除
 
     OutputDebugStringA("Move : SUCCESS\n");
 
@@ -717,4 +706,45 @@ void BattleManager::ResetUnitActions(UnitOwner owner)
             unit->SetActed(false);
         }
     }
-}                       
+}   
+
+// ドローアニメーション開始
+void BattleManager::StartCardDrawAnimation()
+{
+    // 画面サイズ取得
+    int screenWidth = 0;
+    int screenHeight = 0;
+
+    GetScreenState(&screenWidth, &screenHeight, nullptr);
+
+    // 山札のワールド座標
+    const float boardHalfWidth = BattleConfig::BOARD_WIDTH * BattleConfig::CELL_SIZE / 2.0f;
+
+    const float deckMinX = boardHalfWidth + 80.0f;
+    const float deckMaxX = deckMinX + 110.0f;
+
+    const float deckMinZ = -280.0f;
+    const float deckMaxZ = -130.0f;
+
+    const float deckY = 25.0f;
+
+    VECTOR deckWorldPos = 
+        VGet((deckMinX + deckMaxX) / 2.0f,deckY,(deckMinZ + deckMaxZ) / 2.0f);
+
+    // 3D座標を画面座標に変換
+    VECTOR deckScreenPos = ConvWorldPosToScreenPos(deckWorldPos);
+
+    // 手札中央の座標
+    const float endX = screenWidth / 2.0f;
+    const float endY = 790.0f;
+
+    // アニメーション生成
+    std::unique_ptr<CardDrawAnimation> animation =
+        std::make_unique<CardDrawAnimation>
+        (&m_handRenderer,deckScreenPos.x,deckScreenPos.y,endX,endY);
+
+    animation->Start(0.5f);    // 0.5秒で再生
+
+    // AnimationManagerに登録
+    m_animationManager.AddAnimation(std::move(animation));
+}
