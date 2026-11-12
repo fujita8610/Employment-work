@@ -41,7 +41,7 @@ void CardDrawAnimation::Update(float deltaTime)
     m_currentX = m_startX + (m_endX - m_startX) * easedT;    // X座標補間
     m_currentY = m_startY + (m_endY - m_startY) * easedT;    // Y座標補間
 
-    if (m_handRenderer != nullptr)  // HandRendererへ座標を渡す
+    if (m_handRenderer != nullptr)
     {
         m_handRenderer->SetDrawAnimationPosition(m_currentX,m_currentY);
     }

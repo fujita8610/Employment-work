@@ -116,6 +116,10 @@ bool BattleManager::Init()
 
     //戦闘開始
     m_turnManager.StartBattle();
+
+    // ドローアニメーションのテスト再生
+    StartCardDrawAnimation();
+
     return true;
 }
 
