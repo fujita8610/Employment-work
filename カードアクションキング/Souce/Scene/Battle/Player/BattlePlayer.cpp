@@ -159,7 +159,6 @@ std::unique_ptr<CardInstance> BattlePlayer::DrawCardForAnimation()
 // ドローアニメーション終了後に手札へ追加
 void BattlePlayer::AddDrawnCard(std::unique_ptr<CardInstance> card)
 {
-    //
     if (card == nullptr)
     {return;}
 

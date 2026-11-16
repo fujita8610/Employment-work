@@ -130,22 +130,16 @@ void BoardRenderer::Draw(const Board& board)
                 * BattleConfig::CELL_SIZE
                 + BattleConfig::CELL_SIZE / 2.0f;
 
-			//3Dモデルを描画
+            //3Dモデルを描画
             if (m_unitCardModel != -1)
             {
                 VECTOR modelPos = VGet(worldX, 2.0f, worldZ);
 
-                // モデルの位置
-                MV1SetPosition(m_unitCardModel,modelPos);
+                MV1SetPosition(m_unitCardModel, modelPos);
 
-                // モデルの回転
-                // Blenderでカード面をXY平面に作成している場合は
-                // X軸90度回転させて盤面に寝かせる
-                MV1SetRotationXYZ(m_unitCardModel,
-                    VGet(3.14159265f / 2.0f,0.0f,0.0f));
+                MV1SetRotationXYZ(m_unitCardModel,VGet(3.14159265f / 2.0f, 0.0f, 0.0f));
 
-                // モデル描画
-                MV1DrawModel(m_unitCardModel);
+                MV1DrawModel(m_unitCardModel); //
             }
 
             // デバック表示
