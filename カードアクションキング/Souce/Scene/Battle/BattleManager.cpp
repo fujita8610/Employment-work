@@ -396,8 +396,11 @@ void BattleManager::EndCurrentTurn()
 // ユニット生成
 Unit* BattleManager::CreateUnit(const CardData* card,UnitOwner owner,int x,int y)
 {
+    OutputDebugStringA("CreateUnit : START\n");
+
     if (card == nullptr)
     {
+        OutputDebugStringA("CreateUnit : Card is NULL\n");
         return nullptr;
     }
 
@@ -405,6 +408,7 @@ Unit* BattleManager::CreateUnit(const CardData* card,UnitOwner owner,int x,int y
 
     if (!unit->Init(card))
     {
+        OutputDebugStringA("CreateUnit : Unit Init FAILED\n");
         delete unit;
         return nullptr;
     }
@@ -414,12 +418,13 @@ Unit* BattleManager::CreateUnit(const CardData* card,UnitOwner owner,int x,int y
 
     if (!m_board.PlaceUnit(unit, x, y))
     {
+        OutputDebugStringA("CreateUnit : PlaceUnit FAILED\n");
         delete unit;
         return nullptr;
     }
 
     m_units.push_back(unit);
-
+    OutputDebugStringA("CreateUnit : COMPLETE\n");
     return unit;
 }
 
@@ -474,8 +479,8 @@ BattlePlayer& BattleManager::GetCurrentPlayer()
 // 選択中のカードを使用する
 bool BattleManager::UseSelectedCard(int x, int y)
 {
-	// 現在のターンのプレイヤー取得
-    BattlePlayer& player = GetCurrentPlayer();
+    OutputDebugStringA("UseSelectedCard : START\n");
+    BattlePlayer& player = GetCurrentPlayer();	// 現在のターンのプレイヤー取得
 
     // 選択中カードを取得
     const CardInstance* selectedCard = player.GetSelectedCard();
@@ -518,8 +523,10 @@ bool BattleManager::UseSelectedCard(int x, int y)
 
     if (unit == nullptr)
     {
+        OutputDebugStringA("UseSelectedCard : CreateUnit FAILED\n");
         return false;
     }
+    OutputDebugStringA("UseSelectedCard : CreateUnit SUCCESS\n");
 
     // 使用したカードを手札から削除
     int selectedIndex = player.GetSelectedCardIndex();
@@ -539,7 +546,7 @@ bool BattleManager::UseSelectedCard(int x, int y)
     }
 
     player.ClearSelectedCard();    // カード選択解除
-
+    OutputDebugStringA("UseSelectedCard : COMPLETE\n");
     return true;
 }
 
@@ -603,8 +610,7 @@ bool BattleManager::MoveSelectedUnit(int x, int y)
         return false;
     }
 
-    const CardData* cardData =
-        m_selectedUnit->GetCardData();
+    const CardData* cardData = m_selectedUnit->GetCardData();
 
     if (cardData == nullptr)
     {

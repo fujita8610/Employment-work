@@ -96,6 +96,7 @@ bool Board::PlaceUnit(Unit* unit, int x, int y)
 
 	// Unit自身の座標も更新
     unit->SetBoardPosition(x, y);
+    OutputDebugStringA("PlaceUnit : Success.\n");
     return true;
 }
 

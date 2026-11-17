@@ -12,57 +12,77 @@ bool BoardRenderer::Init()
     // ユニット用カードモデルを読み込む
     m_unitCardModel = MV1LoadModel("Data\\3Dmodel\\cardVol1.x");
 
-    // 読み込み失敗
+    // 読み込み確認
     if (m_unitCardModel == -1)
     {
         OutputDebugStringA("BoardRenderer : Unit Card Model Load Failed.\n");
         return false;
     }
 
+    OutputDebugStringA("BoardRenderer : Unit Card Model Load Success.\n");
+
     // モデルのテクスチャ数を取得
     int textureNum = MV1GetTextureNum(m_unitCardModel);
 
     OutputDebugStringA(("Texture Num = " + std::to_string(textureNum) + "\n").c_str());
 
-    // テクスチャ名を確認
-    for (int i = 0; i < textureNum; i++)
-    {
-        const char* textureName =
-            MV1GetTextureName(m_unitCardModel, i);
-
-        OutputDebugStringA(
-            ("Texture[" + std::to_string(i) + "] = "
-                + (textureName != nullptr ? textureName : "NULL")
-                + "\n").c_str());
-    }
-
-    // マテリアル数を取得
-    int materialNum = MV1GetMaterialNum(m_unitCardModel);
-
-    OutputDebugStringA(
-        ("Material Num = " + std::to_string(materialNum) + "\n").c_str());
-
-    // マテリアルが使用しているテクスチャ番号を確認
-    for (int i = 0; i < materialNum; i++)
-    {
-        int textureIndex =
-            MV1GetMaterialDifMapTexture(m_unitCardModel, i);
-
-        OutputDebugStringA(
-            ("Material[" + std::to_string(i)
-                + "] Texture Index = "
-                + std::to_string(textureIndex) + "\n").c_str());
-    }
-
     // モデルの大きさ
     MV1SetScale(m_unitCardModel,
         VGet(m_unitModelScale,m_unitModelScale,m_unitModelScale));
+
+    int meshNum = MV1GetMeshNum(m_unitCardModel);    // モデルのメッシュ数を取得
+
+    char debugText[256];    // メッシュ数を出力
+
+    sprintf_s(debugText,"Model Mesh Num : %d\n",meshNum);
+
+    OutputDebugStringA(debugText);
+
+    // 各メッシュの大きさを確認
+    for (int i = 0; i < meshNum; i++)
+    {
+        VECTOR minPos = MV1GetMeshMinPosition(m_unitCardModel, i);
+        VECTOR maxPos = MV1GetMeshMaxPosition(m_unitCardModel, i);
+
+        sprintf_s(debugText,"Mesh %d : X %.3f Y %.3f Z %.3f\n",
+            i,maxPos.x - minPos.x,maxPos.y - minPos.y,maxPos.z - minPos.z);
+
+        OutputDebugStringA(debugText);
+    }
+
 
     return true;
 }
 
 void BoardRenderer::Draw(const Board& board)
 {
+    static bool firstDraw = true;
+	if (firstDraw) // 初回描画時にデバッグ出力
+    {
+        OutputDebugStringA("BoardRenderer : Draw Called.\n");
+        firstDraw = false;
+    }
+
+	int unitCount = 0; // 盤面上のユニット数をカウント
+    for (int y = 0; y < BattleConfig::BOARD_HEIGHT; y++)
+    {
+        for (int x = 0; x < BattleConfig::BOARD_WIDTH; x++)
+        {
+            Cell* cell = const_cast<Board&>(board).GetCell(x, y);
+
+            if (cell != nullptr && cell->HasUnit())
+            {
+                unitCount++;
+            }
+        }
+    }
+
+	char debugText[128]; // デバッグ用の文字列バッファ
+
+    sprintf_s(debugText,"BoardRenderer : Unit Count = %d\n",unitCount);
+    OutputDebugStringA(debugText);
+
+
 	//盤面の枠を描画
     for (int y = 0; y < BattleConfig::BOARD_HEIGHT; y++)
     {
@@ -137,9 +157,39 @@ void BoardRenderer::Draw(const Board& board)
 
                 MV1SetPosition(m_unitCardModel, modelPos);
 
-                MV1SetRotationXYZ(m_unitCardModel,VGet(3.14159265f / 2.0f, 0.0f, 0.0f));
+                MV1SetRotationXYZ(m_unitCardModel,
+                    VGet(3.14159265f / 2.0f, 0.0f, 0.0f));
 
                 MV1DrawModel(m_unitCardModel); //
+            }
+
+            // キャラクター配置用の仮ボックス
+            {
+                // ボックスの大きさ
+                float boxHalfWidth = 25.0f;
+                float boxHeight = 60.0f;
+
+                // ボックスの位置
+                VECTOR boxMin =
+                    VGet(worldX - boxHalfWidth,5.0f,worldZ - boxHalfWidth);
+
+                VECTOR boxMax =
+                    VGet(worldX + boxHalfWidth,boxHeight,worldZ + boxHalfWidth);
+
+                // 所有者によって色を変更
+                int boxColor;
+
+                if (unit->GetOwner() == UnitOwner::Player1)
+                {
+                    boxColor = GetColor(0, 200, 255);
+                }
+                else
+                {
+                    boxColor = GetColor(255, 80, 80);
+                }
+
+                // ワイヤーフレームのボックスを描画
+                DrawCube3D(boxMin,boxMax,boxColor,FALSE,boxColor);
             }
 
             // デバック表示
