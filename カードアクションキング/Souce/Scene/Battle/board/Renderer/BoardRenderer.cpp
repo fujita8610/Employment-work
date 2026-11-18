@@ -158,7 +158,7 @@ void BoardRenderer::Draw(const Board& board)
                 MV1SetPosition(m_unitCardModel, modelPos);
 
                 MV1SetRotationXYZ(m_unitCardModel,
-                    VGet(3.14159265f / 2.0f, 0.0f, 0.0f));
+                    VGet(0.0f, 3.14159265f * 1.5f, 0.0f));
 
                 MV1DrawModel(m_unitCardModel); //
             }
