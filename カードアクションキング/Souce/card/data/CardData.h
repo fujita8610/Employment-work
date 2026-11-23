@@ -12,6 +12,17 @@
 //カードの移動パターン
 #include "Pattern/PatternType.h"
 
+// ユニットモデルの種類
+enum class UnitModelType
+{
+    None = 0,
+
+    Knight,     // ナイト
+    Archer,     // 弓兵
+    Spearman,   // 槍兵
+    King        // キング
+};
+
 struct CardData
 {
     // 基本情報
@@ -22,8 +33,7 @@ struct CardData
     // カード種別
     CardType type = CardType::Unit;
 
-	//コスト
-    int cost = 0;
+    int cost = 0;	//コスト
 
     // ユニット用ステータス
     int hp = 0;
@@ -31,13 +41,14 @@ struct CardData
     //int move = 0;      // 移動力
    // int range = 1;     // 攻撃範囲
 
-	//カードの説明
-    std::string description;
+    std::string description;	//カードの説明
 
-    // 効果
-    std::vector<CardEffect> effects;
+    std::vector<CardEffect> effects;    // 効果
 
 	// 攻撃パターンと移動パターン
     PatternType attackPattern = PatternType::None;
     PatternType movePattern = PatternType::None;
+
+    // 3Dモデルの種類
+    UnitModelType modelType = UnitModelType::None;
 };

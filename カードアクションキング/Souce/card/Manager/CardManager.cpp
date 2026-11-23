@@ -238,6 +238,31 @@ bool CardManager::Load(const std::string& csvPath)
         // ‰æ‘œ
         card.image = row[10];
 
+        // 3Dƒ‚ƒfƒ‹‚ÌŽí—Þ
+        if (row.size() > 11)
+        {
+            if (row[11] == "Knight")
+            {
+                card.modelType = UnitModelType::Knight;
+            }
+            else if (row[11] == "Archer")
+            {
+                card.modelType = UnitModelType::Archer;
+            }
+            else if (row[11] == "Spearman")
+            {
+                card.modelType = UnitModelType::Spearman;
+            }
+            else if (row[11] == "King")
+            {
+                card.modelType = UnitModelType::King;
+            }
+            else
+            {
+                card.modelType = UnitModelType::None;
+            }
+        }
+
         // CardData‚ð“o˜^
         m_cards.push_back(card);
     }
