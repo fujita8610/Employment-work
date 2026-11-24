@@ -50,6 +50,8 @@ bool BoardRenderer::Init()
         OutputDebugStringA(debugText);
     }
 
+    // キャラクターモデル描画システムの初期化
+    m_unitRenderer.Init();
 
     return true;
 }
@@ -165,6 +167,9 @@ void BoardRenderer::Draw(const Board& board)
 
             // キャラクター配置用の仮ボックス
             {
+                // キャラクターの3Dモデルを描画
+                m_unitRenderer.Draw(*unit, worldX, worldZ);
+
                 // ボックスの大きさ
                 float boxHalfWidth = 25.0f;
                 float boxHeight = 60.0f;
@@ -241,4 +246,7 @@ void BoardRenderer::Release()
         MV1DeleteModel(m_floorModel);
         m_floorModel = -1;
     }
+
+    // キャラクターモデル描画システムの解放
+    m_unitRenderer.Release();
 }

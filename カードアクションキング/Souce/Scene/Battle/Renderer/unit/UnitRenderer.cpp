@@ -112,7 +112,7 @@ void UnitRenderer::Draw(const Unit& unit,float worldX,float worldZ)
     }
 
     // モデル位置
-    VECTOR position = VGet(worldX,model.heightOffset,worldZ);
+    VECTOR position = VGet(worldX,2.0f + model.heightOffset,worldZ);
 
     MV1SetPosition(model.handle, position);
 
