@@ -3,25 +3,10 @@
 #include <string>
 #include <vector>
 
-//カードタイプ
-#include "CardType.h"
-
-//カード効果
-#include "CardEffect.h"
-
-//カードの移動パターン
-#include "Pattern/PatternType.h"
-
-// ユニットモデルの種類
-enum class UnitModelType
-{
-    None = 0,
-
-    Knight,     // ナイト
-    Archer,     // 弓兵
-    Spearman,   // 槍兵
-    King        // キング
-};
+#include "CardType.h"//カードタイプ
+#include "CardEffect.h"//カード効果
+#include "Pattern/PatternType.h"//カードの移動パターン
+#include "UnitModelType.h" //ユニットモデルの種類
 
 struct CardData
 {

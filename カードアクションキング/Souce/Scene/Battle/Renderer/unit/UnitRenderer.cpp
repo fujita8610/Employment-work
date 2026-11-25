@@ -86,9 +86,6 @@ void UnitRenderer::Draw(const Unit& unit,float worldX,float worldZ)
 
     // 仮設定：カードIDによるモデル判定
     // 後ほどCardDataに専用のModelTypeを追加する
-
-    UnitModelType type = UnitModelType::None;
-
     UnitModelType type = card->modelType;
 
     if (type == UnitModelType::None)

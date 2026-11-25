@@ -2,19 +2,10 @@
 
 #include <map>
 
+#include "../../../../card/data/UnitModelType.h"
+
 // DxLibのモデルハンドル
 using ModelHandle = int;
-
-// ユニットモデルの種類
-enum class UnitModelType
-{
-    None = 0,
-
-    Knight,     // ナイト
-    Archer,     // 弓兵
-    Spearman,   // 槍兵
-    King        // キング
-};
 
 // モデルごとの設定
 struct UnitModelInfo
