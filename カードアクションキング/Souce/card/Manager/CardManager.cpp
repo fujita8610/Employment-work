@@ -241,25 +241,29 @@ bool CardManager::Load(const std::string& csvPath)
         // 3Dƒ‚ƒfƒ‹‚ÌŽí—Þ
         if (row.size() > 11)
         {
-            if (row[11] == "Knight")
+            int modelType = ToInt(row[11]);
+
+            switch (modelType)
             {
+            case 1:
                 card.modelType = UnitModelType::Knight;
-            }
-            else if (row[11] == "Archer")
-            {
+                break;
+
+            case 2:
                 card.modelType = UnitModelType::Archer;
-            }
-            else if (row[11] == "Spearman")
-            {
+                break;
+
+            case 3:
                 card.modelType = UnitModelType::Spearman;
-            }
-            else if (row[11] == "King")
-            {
+                break;
+
+            case 4:
                 card.modelType = UnitModelType::King;
-            }
-            else
-            {
+                break;
+
+            default:
                 card.modelType = UnitModelType::None;
+                break;
             }
         }
 

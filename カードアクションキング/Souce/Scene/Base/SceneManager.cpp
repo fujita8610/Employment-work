@@ -1,7 +1,8 @@
 #include "SceneManager.h"
 
 //各シーン
-#include "../Battle/BattleScene.h"
+#include "../Title/TitleScene.h"    //タイトルシーン
+#include "../Battle/BattleScene.h"  //バトルシーン
 
 // SceneManagerのインスタンスを取得
 SceneManager& SceneManager::GetInstance()
